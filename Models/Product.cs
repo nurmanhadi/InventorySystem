@@ -31,7 +31,7 @@ public class Product
     public long CategoryId { get; set; }
 
     [ForeignKey(nameof(CategoryId))]
-    public Category Category { get; set; } = null!;
+    public Category? Category { get; set; }
 
     public ICollection<Stock> Stocks { get; set; } = [];
 

@@ -12,7 +12,8 @@ public class ProductResponse
     public decimal Price { get; set; }
     public DateTime CreatedAt { get; set; }
     public long CategoryId { get; set; }
-    public CategoryResponse? Category { get; set; } = null!;
+    public CategoryResponse? Category { get; set; }
+    public List<StockResponse> Stocks { get; set; } = [];
 }
 
 public class ProductAddRequest

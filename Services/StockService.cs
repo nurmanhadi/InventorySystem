@@ -7,6 +7,9 @@ public class StockService(DbInitiate db)
     private readonly DbInitiate db = db;
 
     // stock in
+    public async Task StockIn()
+    {
+    }
     // stock out
 
 }

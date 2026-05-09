@@ -26,5 +26,5 @@ public class Stock
     public DateTime CreatedAt { get; set; }
 
     [ForeignKey(nameof(ProductId))]
-    public Product Product { get; set; } = null!;
+    public Product? Product { get; set; }
 }
