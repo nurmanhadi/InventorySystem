@@ -9,7 +9,6 @@ public class CategoryAddRequest
     [StringLength(50, MinimumLength = 1)]
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
-    public List<ProductResponse> Products { get; set; } = [];
 }
 
 public class CategoryUpdateRequest
@@ -27,4 +26,5 @@ public class CategoryResponse
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
+    public List<ProductResponse> Products { get; set; } = [];
 }

@@ -56,8 +56,8 @@ class ProductService(DbInitiate db)
             CategoryId = p.CategoryId,
             Category = new CategoryResponse
             {
-                Id = p.Category.Id,
-                Name = p.Category.Name
+                Id = p.Category!.Id,
+                Name = p.Category!.Name
             }
         }).FirstOrDefaultAsync() ?? throw new NotFoundException($"Product with id {id} not found");
         return product;

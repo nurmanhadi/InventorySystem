@@ -20,10 +20,6 @@ public class StockRequest
     public long ProductId { get; set; }
 
     [Required]
-    [JsonPropertyName("type")]
-    public StockType Type { get; set; }
-
-    [Required]
     [Range(1, int.MaxValue)]
     [JsonPropertyName("quantity")]
     public int Quantity { get; set; }

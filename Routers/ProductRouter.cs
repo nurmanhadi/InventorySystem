@@ -9,7 +9,7 @@ public static class ProductRouter
 {
     public static void MapProductRoutes(this WebApplication app)
     {
-        var products = app.MapGroup("/api/products").WithTags("Product");
+        var products = app.MapGroup("/products").WithTags("Product");
 
         // add product
         products.MapPost("/", async (

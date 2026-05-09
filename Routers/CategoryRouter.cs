@@ -8,7 +8,7 @@ public static class CategoryRouter
 {
     public static void MapCategoryRoutes(this WebApplication app)
     {
-        var category = app.MapGroup("/api/category").WithTags("Category");
+        var category = app.MapGroup("/categories").WithTags("Category");
 
         // add category
         category.MapPost("/", async (
@@ -18,7 +18,7 @@ public static class CategoryRouter
         {
             var response = await categoryService.AddCategory(request);
             return Results.Created(
-                $"/api/category/{response.Id}",
+                $"/api/categories/{response.Id}",
                 new WebResponse<CategoryResponse>(message: "Category created successfully", data: response));
         });
         // get category by id

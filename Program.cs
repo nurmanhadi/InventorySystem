@@ -29,6 +29,7 @@ builder.Services.AddSwaggerGen(ops =>
 // add services
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
+builder.Services.AddScoped<StockService>();
 
 var app = builder.Build();
 
@@ -41,6 +42,7 @@ if (app.Environment.IsDevelopment())
 // add routes
 app.MapCategoryRoutes();
 app.MapProductRoutes();
+app.MapStockRoutes();
 
 // add middleware
 app.UseMiddleware<GlobalException>();
