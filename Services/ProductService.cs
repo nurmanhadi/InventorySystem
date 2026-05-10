@@ -63,7 +63,7 @@ class ProductService(DbInitiate db)
         return product;
     }
     // get all products
-    public async Task<WebPaginationResponse<ProductResponse>> GetAllProducts(int page, int pageSize, string? search = null)
+    public async Task<WebPaginationResponse<ProductResponse>> GetAllProducts(int page, int pageSize, string? search = null, long? categoryId = null)
     {
         var totalItemsQuery = db.Products.AsNoTracking().AsQueryable();
         var query = db.Products
@@ -74,7 +74,11 @@ class ProductService(DbInitiate db)
             query = query.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
             totalItemsQuery = totalItemsQuery.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
         }
-        ;
+        if (categoryId.HasValue)
+        {
+            query = query.Where(p => p.CategoryId == categoryId.Value);
+            totalItemsQuery = totalItemsQuery.Where(p => p.CategoryId == categoryId.Value);
+        }
         var totalItems = await totalItemsQuery.CountAsync();
         var products = await query
         .OrderByDescending(p => p.CreatedAt)
