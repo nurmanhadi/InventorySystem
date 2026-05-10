@@ -13,8 +13,8 @@ public static class ProductRouter
 
         // add product
         products.MapPost("/", async (
-                ProductAddRequest request,
-                ProductService productService
+                [FromServices] ProductService productService,
+                [FromBody] ProductAddRequest request
                 ) =>
             {
                 var response = await productService.AddProduct(request);
@@ -24,8 +24,8 @@ public static class ProductRouter
             });
         // get product by id
         products.MapGet("/{id}", async (
-            long id,
-            ProductService productService
+            [FromServices] ProductService productService,
+            [FromRoute] long id
             ) =>
         {
             var response = await productService.GetProductById(id);
@@ -45,9 +45,9 @@ public static class ProductRouter
         });
         // update product
         products.MapPut("/{id}", async (
-            long id,
-            ProductUpdateRequest request,
-            ProductService productService
+            [FromServices] ProductService productService,
+            [FromRoute] long id,
+            [FromBody] ProductUpdateRequest request
             ) =>
         {
             await productService.UpdateProduct(id, request);
@@ -55,8 +55,8 @@ public static class ProductRouter
         });
         // delete product
         products.MapDelete("/{id}", async (
-            long id,
-            ProductService productService
+            [FromServices] ProductService productService,
+            [FromRoute] long id
             ) =>
         {
             await productService.DeleteProduct(id);
