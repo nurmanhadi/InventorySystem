@@ -6,8 +6,22 @@ using InventorySystem.Routers;
 using InventorySystem.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using Serilog;
+using Serilog.Events;
+using Serilog.Formatting.Compact;
+
+// add logging
+Log.Logger = new LoggerConfiguration()
+    .WriteTo.Console(new RenderedCompactJsonFormatter())
+    .MinimumLevel.Information()
+    .MinimumLevel.Override(
+        "Microsoft.AspNetCore",
+        LogEventLevel.Warning
+    )
+    .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+builder.Host.UseSerilog();
 builder.Services.AddDbContextPool<DbInitiate>(ops =>
     ops.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")

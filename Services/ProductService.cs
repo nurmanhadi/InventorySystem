@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Services;
 
-class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddValidator, IValidator<ProductUpdateRequest> productUpdateValidator)
+class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<ProductAddRequest> productAddValidator, IValidator<ProductUpdateRequest> productUpdateValidator)
 {
     private readonly DbInitiate db = db;
+    private readonly ILogger<ProductService> logger = logger;
     private readonly IValidator<ProductAddRequest> productAddValidator = productAddValidator;
     private readonly IValidator<ProductUpdateRequest> productUpdateValidator = productUpdateValidator;
 
@@ -31,6 +32,7 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
 
         db.Products.Add(product);
         await db.SaveChangesAsync();
+        logger.LogInformation("Product with id {ProductId} created", product.Id);
 
         return new ProductResponse
         {
@@ -63,7 +65,13 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
                 Id = p.Category!.Id,
                 Name = p.Category!.Name
             }
-        }).FirstOrDefaultAsync() ?? throw new NotFoundException($"Product with id {id} not found");
+        }).FirstOrDefaultAsync();
+        if (product == null)
+        {
+            logger.LogWarning("Product with id {ProductId} not found", id);
+            throw new NotFoundException($"Product with id {id} not found");
+        }
+        logger.LogInformation("Product with id {ProductId} retrieved", id);
         return product;
     }
     // get all products
@@ -98,14 +106,19 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
             CreatedAt = p.CreatedAt,
             CategoryId = p.CategoryId
         }).ToListAsync();
-
+        logger.LogInformation("Products retrieved with count {ProductCount}, page {Page}, pageSize {PageSize}", products.Count, page, pageSize);
         return new WebPaginationResponse<ProductResponse>(products, page, pageSize, totalItems);
     }
     // update product
     public async Task UpdateProduct(long id, ProductUpdateRequest request)
     {
         await ProductValidation(productUpdateRequest: request);
-        var product = await db.Products.FindAsync(id) ?? throw new NotFoundException($"Product with id {id} not found");
+        var product = await db.Products.FindAsync(id);
+        if (product == null)
+        {
+            logger.LogWarning("Product with id {ProductId} not found", id);
+            throw new NotFoundException($"Product with id {id} not found");
+        }
         if (!string.IsNullOrEmpty(request.Name))
         {
             product.Name = request.Name;
@@ -129,13 +142,20 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
             product.CategoryId = request.CategoryId.Value;
         }
         await db.SaveChangesAsync();
+        logger.LogInformation("Product with id {ProductId} updated", id);
     }
     // delete product
     public async Task DeleteProduct(long id)
     {
-        var product = await db.Products.FindAsync(id) ?? throw new NotFoundException($"Product with id {id} not found");
+        var product = await db.Products.FindAsync(id);
+        if (product == null)
+        {
+            logger.LogWarning("Product with id {ProductId} not found", id);
+            throw new NotFoundException($"Product with id {id} not found");
+        }
         db.Products.Remove(product);
         await db.SaveChangesAsync();
+        logger.LogInformation("Product with id {ProductId} deleted", id);
     }
 
     // check category exists
@@ -144,6 +164,7 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
         var category = await db.Categories.CountAsync(c => c.Id == categoryId);
         if (category == 0)
         {
+            logger.LogWarning("Category with id {CategoryId} not found", categoryId);
             throw new NotFoundException($"Category with id {categoryId} not found");
         }
     }
@@ -153,17 +174,19 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
         var product = await db.Products.CountAsync(p => p.Sku == sku);
         if (product > 0)
         {
+            logger.LogWarning("Product with sku {Sku} already exists", sku);
             throw new BadRequestException($"Product with sku {sku} already exists");
         }
     }
     // product validation
-    public async Task ProductValidation(ProductAddRequest? productAddRequest = null, ProductUpdateRequest? productUpdateRequest = null)
+    private async Task ProductValidation(ProductAddRequest? productAddRequest = null, ProductUpdateRequest? productUpdateRequest = null)
     {
         if (productAddRequest != null)
         {
             var validationResult = await productAddValidator.ValidateAsync(productAddRequest);
             if (!validationResult.IsValid)
             {
+                logger.LogWarning("Product add validation failed: {ErrorMessage}", validationResult.Errors.First().ErrorMessage);
                 throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
             }
         }
@@ -172,6 +195,7 @@ class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddVali
             var validationResult = await productUpdateValidator.ValidateAsync(productUpdateRequest);
             if (!validationResult.IsValid)
             {
+                logger.LogWarning("Product update validation failed: {ErrorMessage}", validationResult.Errors.First().ErrorMessage);
                 throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
             }
         }

@@ -7,9 +7,10 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Services;
 
-public class StockService(DbInitiate db, IValidator<StockRequest> validator)
+public class StockService(DbInitiate db, ILogger<StockService> logger, IValidator<StockRequest> validator)
 {
     private readonly DbInitiate db = db;
+    private readonly ILogger<StockService> logger = logger;
     private readonly IValidator<StockRequest> validator = validator;
 
     // stock in
@@ -32,10 +33,12 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
             await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.IN);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
+            logger.LogInformation("Stock updated for product with id {ProductId}: +{Quantity}", request.ProductId, request.Quantity);
         }
         catch
         {
             await transaction.RollbackAsync();
+            logger.LogWarning("Failed to update stock for product with id {ProductId}", request.ProductId);
             throw;
         }
 
@@ -60,10 +63,12 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
             await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.OUT);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
+            logger.LogInformation("Stock updated for product with id {ProductId}: -{Quantity}", request.ProductId, request.Quantity);
         }
         catch
         {
             await transaction.RollbackAsync();
+            logger.LogWarning("Failed to update stock for product with id {ProductId}", request.ProductId);
             throw;
         }
     }
@@ -115,6 +120,7 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
                 }
             })
             .ToListAsync();
+        logger.LogInformation("Stock history retrieved with count {StockCount}, page {Page}, size {Size}", stocks.Count, page, size);
         return new WebPaginationResponse<StockWithProductMinimalResponse>(stocks, page, size, totalItems);
     }
 
@@ -124,6 +130,7 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
         var product = await db.Products.CountAsync(p => p.Id == productId);
         if (product == 0)
         {
+            logger.LogWarning("Product with id {ProductId} not found", productId);
             throw new NotFoundException($"Product with id {productId} not found");
         }
     }
@@ -140,6 +147,7 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
             case StockType.OUT:
                 if (product.Stock < quantity)
                 {
+                    logger.LogWarning("Not enough stock for product with id {ProductId}", productId);
                     throw new BadRequestException($"Not enough stock for product with id {productId}");
                 }
                 product.Stock -= quantity;
@@ -148,11 +156,12 @@ public class StockService(DbInitiate db, IValidator<StockRequest> validator)
     }
 
     // stock validation
-    public async Task StockValidation(StockRequest request)
+    private async Task StockValidation(StockRequest request)
     {
         var validationResult = await validator.ValidateAsync(request);
         if (!validationResult.IsValid)
         {
+            logger.LogWarning("Stock validation failed: {ErrorMessage}", validationResult.Errors.First().ErrorMessage);
             throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
         }
     }
