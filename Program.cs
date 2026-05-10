@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 using InventorySystem.Middlewares;
 using InventorySystem.Models;
 using InventorySystem.Routers;
@@ -8,10 +9,16 @@ using Microsoft.OpenApi;
 var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddDbContext<DbInitiate>(ops => ops.UseNpgsql(@"Host=localhost;Username=postgres;Password=postgres;Database=inventory"));
 
+// configure json request and response
+builder.Services.ConfigureHttpJsonOptions(ops =>
+{
+    ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
 // add swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ops =>
 {
+    ops.UseInlineDefinitionsForEnums();
     ops.SwaggerDoc("v1", new OpenApiInfo
     {
         Title = "Inventory System API",
