@@ -63,11 +63,20 @@ class ProductService(DbInitiate db)
         return product;
     }
     // get all products
-    public async Task<WebPaginationResponse<ProductResponse>> GetAllProducts(int page, int pageSize)
+    public async Task<WebPaginationResponse<ProductResponse>> GetAllProducts(int page, int pageSize, string? search = null)
     {
-        var totalItems = await db.Products.CountAsync();
-        var products = await db.Products
+        var totalItemsQuery = db.Products.AsNoTracking().AsQueryable();
+        var query = db.Products
         .AsNoTracking()
+        .AsQueryable();
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
+            totalItemsQuery = totalItemsQuery.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
+        }
+        ;
+        var totalItems = await totalItemsQuery.CountAsync();
+        var products = await query
         .OrderByDescending(p => p.CreatedAt)
         .Skip((page - 1) * pageSize)
         .Take(pageSize)

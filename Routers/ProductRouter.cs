@@ -35,10 +35,11 @@ public static class ProductRouter
         products.MapGet("/", async (
             [FromServices] ProductService productService,
             [FromQuery] int page = 1,
-            [FromQuery] int size = 10
+            [FromQuery] int size = 10,
+            [FromQuery] string? search = null
             ) =>
         {
-            var response = await productService.GetAllProducts(page, size);
+            var response = await productService.GetAllProducts(page, size, search);
             return Results.Ok(new WebResponse<WebPaginationResponse<ProductResponse>>(message: "Products retrieved successfully", data: response));
         });
         // update product
