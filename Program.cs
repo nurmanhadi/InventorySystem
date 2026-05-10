@@ -1,4 +1,5 @@
 using System.Text.Json.Serialization;
+using FluentValidation;
 using InventorySystem.Middlewares;
 using InventorySystem.Models;
 using InventorySystem.Routers;
@@ -7,7 +8,13 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 
 var builder = WebApplication.CreateBuilder(args);
-builder.Services.AddDbContext<DbInitiate>(ops => ops.UseNpgsql(@"Host=localhost;Username=postgres;Password=postgres;Database=inventory"));
+builder.Services.AddDbContextPool<DbInitiate>(ops =>
+    ops.UseNpgsql(
+        builder.Configuration.GetConnectionString("DefaultConnection")
+    )
+);
+// add validation
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
 // configure json request and response
 builder.Services.ConfigureHttpJsonOptions(ops =>

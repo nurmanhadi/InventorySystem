@@ -1,3 +1,4 @@
+using FluentValidation;
 using InventorySystem.Dtos;
 using InventorySystem.Exceptions;
 using InventorySystem.Helpers;
@@ -6,13 +7,16 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Services;
 
-class ProductService(DbInitiate db)
+class ProductService(DbInitiate db, IValidator<ProductAddRequest> productAddValidator, IValidator<ProductUpdateRequest> productUpdateValidator)
 {
     private readonly DbInitiate db = db;
+    private readonly IValidator<ProductAddRequest> productAddValidator = productAddValidator;
+    private readonly IValidator<ProductUpdateRequest> productUpdateValidator = productUpdateValidator;
 
     // add product
     public async Task<ProductResponse> AddProduct(ProductAddRequest request)
     {
+        await ProductValidation(productAddRequest: request);
         await CheckCategoryExistsAsync(request.CategoryId);
         await CheckSkuExistsAsync(request.Sku);
         var product = new Product
@@ -100,6 +104,7 @@ class ProductService(DbInitiate db)
     // update product
     public async Task UpdateProduct(long id, ProductUpdateRequest request)
     {
+        await ProductValidation(productUpdateRequest: request);
         var product = await db.Products.FindAsync(id) ?? throw new NotFoundException($"Product with id {id} not found");
         if (!string.IsNullOrEmpty(request.Name))
         {
@@ -149,6 +154,26 @@ class ProductService(DbInitiate db)
         if (product > 0)
         {
             throw new BadRequestException($"Product with sku {sku} already exists");
+        }
+    }
+    // product validation
+    public async Task ProductValidation(ProductAddRequest? productAddRequest = null, ProductUpdateRequest? productUpdateRequest = null)
+    {
+        if (productAddRequest != null)
+        {
+            var validationResult = await productAddValidator.ValidateAsync(productAddRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
+            }
+        }
+        if (productUpdateRequest != null)
+        {
+            var validationResult = await productUpdateValidator.ValidateAsync(productUpdateRequest);
+            if (!validationResult.IsValid)
+            {
+                throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
+            }
         }
     }
 }

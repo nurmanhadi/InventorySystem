@@ -1,3 +1,4 @@
+using FluentValidation;
 using InventorySystem.Dtos;
 using InventorySystem.Exceptions;
 using InventorySystem.Helpers;
@@ -6,13 +7,15 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Services;
 
-public class StockService(DbInitiate db)
+public class StockService(DbInitiate db, IValidator<StockRequest> validator)
 {
     private readonly DbInitiate db = db;
+    private readonly IValidator<StockRequest> validator = validator;
 
     // stock in
     public async Task StockIn(StockRequest request)
     {
+        await StockValidation(request);
         await CheckProductExistsAsync(request.ProductId);
         await using var transaction = await db.Database.BeginTransactionAsync();
         try
@@ -40,6 +43,7 @@ public class StockService(DbInitiate db)
     // stock out
     public async Task StockOut(StockRequest request)
     {
+        await StockValidation(request);
         await CheckProductExistsAsync(request.ProductId);
         await using var transaction = await db.Database.BeginTransactionAsync();
         try
@@ -140,6 +144,16 @@ public class StockService(DbInitiate db)
                 }
                 product.Stock -= quantity;
                 break;
+        }
+    }
+
+    // stock validation
+    public async Task StockValidation(StockRequest request)
+    {
+        var validationResult = await validator.ValidateAsync(request);
+        if (!validationResult.IsValid)
+        {
+            throw new BadRequestException(validationResult.Errors.First().ErrorMessage);
         }
     }
 
