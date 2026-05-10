@@ -40,12 +40,12 @@ class ProductService(DbInitiate db)
         };
     }
     // get product by id
-    public async Task<ProductResponse> GetProductById(long id)
+    public async Task<ProductWithCategoryResponse> GetProductById(long id)
     {
         var product = await db.Products
         .AsNoTracking()
         .Where(p => p.Id == id)
-        .Select(p => new ProductResponse
+        .Select(p => new ProductWithCategoryResponse
         {
             Id = p.Id,
             Name = p.Name,

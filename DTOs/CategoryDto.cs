@@ -26,5 +26,4 @@ public class CategoryResponse
 
     [JsonPropertyName("name")]
     public string Name { get; set; } = string.Empty;
-    public List<ProductResponse> Products { get; set; } = [];
 }

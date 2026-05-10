@@ -11,7 +11,14 @@ public class StockResponse
     public StockType Type { get; set; }
     public int Quantity { get; set; }
     public DateTime CreatedAt { get; set; }
-    public ProductResponse? Product { get; set; }
+}
+public class StockWithProductMinimalResponse
+{
+    public long Id { get; set; }
+    public StockType Type { get; set; }
+    public int Quantity { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public ProductMinimalResponse Product { get; set; } = new ProductMinimalResponse();
 }
 public class StockRequest
 {

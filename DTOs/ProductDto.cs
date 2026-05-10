@@ -12,8 +12,24 @@ public class ProductResponse
     public decimal Price { get; set; }
     public DateTime CreatedAt { get; set; }
     public long CategoryId { get; set; }
-    public CategoryResponse? Category { get; set; }
-    public List<StockResponse> Stocks { get; set; } = [];
+}
+
+public class ProductWithCategoryResponse
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Sku { get; set; } = string.Empty;
+    public int Stock { get; set; }
+    public decimal Price { get; set; }
+    public DateTime CreatedAt { get; set; }
+    public long CategoryId { get; set; }
+    public CategoryResponse Category { get; set; } = new CategoryResponse();
+}
+public class ProductMinimalResponse
+{
+    public long Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Sku { get; set; } = string.Empty;
 }
 
 public class ProductAddRequest

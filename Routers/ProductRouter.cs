@@ -29,7 +29,7 @@ public static class ProductRouter
             ) =>
         {
             var response = await productService.GetProductById(id);
-            return Results.Ok(new WebResponse<ProductResponse>(message: "Product retrieved successfully", data: response));
+            return Results.Ok(new WebResponse<ProductWithCategoryResponse>(message: "Product retrieved successfully", data: response));
         });
         // get all products
         products.MapGet("/", async (

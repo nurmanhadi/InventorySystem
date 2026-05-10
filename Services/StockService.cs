@@ -64,7 +64,7 @@ public class StockService(DbInitiate db)
         }
     }
     // get stock history
-    public async Task<WebPaginationResponse<StockResponse>> GetStockHistory(int page, int size, HistoryStockPeriod period, long? productId, StockType? type = null)
+    public async Task<WebPaginationResponse<StockWithProductMinimalResponse>> GetStockHistory(int page, int size, HistoryStockPeriod period, long? productId, StockType? type = null)
     {
         var query = db.Stocks
         .AsNoTracking()
@@ -97,21 +97,21 @@ public class StockService(DbInitiate db)
             .OrderByDescending(s => s.CreatedAt)
             .Skip((page - 1) * size)
             .Take(size)
-            .Select(s => new StockResponse
+            .Select(s => new StockWithProductMinimalResponse
             {
                 Id = s.Id,
                 Type = s.Type,
                 Quantity = s.Quantity,
                 CreatedAt = s.CreatedAt,
-                Product = new ProductResponse
+                Product = new ProductMinimalResponse
                 {
                     Id = s.Product!.Id,
                     Name = s.Product!.Name,
-                    Stock = s.Product!.Stock
+                    Sku = s.Product!.Sku
                 }
             })
             .ToListAsync();
-        return new WebPaginationResponse<StockResponse>(stocks, page, size, totalItems);
+        return new WebPaginationResponse<StockWithProductMinimalResponse>(stocks, page, size, totalItems);
     }
 
     // check product exist

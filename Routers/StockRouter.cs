@@ -42,7 +42,7 @@ public static class StockRouter
             ) =>
         {
             var response = await stockService.GetStockHistory(page, size, period, productId, type);
-            return Results.Ok(response);
+            return Results.Ok(new WebResponse<WebPaginationResponse<StockWithProductMinimalResponse>>(message: "Stock history retrieved successfully", data: response));
         });
     }
 }
