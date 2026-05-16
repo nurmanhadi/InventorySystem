@@ -21,7 +21,9 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 
 var builder = WebApplication.CreateBuilder(args);
+// add serilog
 builder.Host.UseSerilog();
+// add database
 builder.Services.AddDbContextPool<DbInitiate>(ops =>
     ops.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
@@ -59,6 +61,17 @@ builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<StockService>();
 
+//add cords
+builder.Services.AddCors(ops =>
+{
+    ops.AddPolicy("InventoryUI", policy =>
+    {
+        policy.WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
+});
+
 var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
@@ -74,5 +87,6 @@ app.MapStockRoutes();
 
 // add middleware
 app.UseMiddleware<GlobalException>();
+app.UseCors("InventoryUI");
 
 app.Run();

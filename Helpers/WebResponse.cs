@@ -14,7 +14,7 @@ public class WebPaginationResponse<T>(List<T> contents, int page, int pageSize, 
 {
     [JsonPropertyName("contents")]
     public List<T> Contents { get; set; } = contents;
-    [JsonPropertyName("current_page")]
+    [JsonPropertyName("page")]
     public int Page { get; set; } = page;
     [JsonPropertyName("page_size")]
     public int PageSize { get; set; } = pageSize;
