@@ -12,11 +12,13 @@ using Serilog.Formatting.Compact;
 
 // add logging
 Log.Logger = new LoggerConfiguration()
-    .WriteTo.Console(new RenderedCompactJsonFormatter())
     .MinimumLevel.Information()
     .MinimumLevel.Override(
         "Microsoft.AspNetCore",
         LogEventLevel.Warning
+    )
+    .WriteTo.Console(
+    // new RenderedCompactJsonFormatter()
     )
     .CreateLogger();
 

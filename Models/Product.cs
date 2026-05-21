@@ -1,6 +1,7 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using Microsoft.EntityFrameworkCore;
+using NpgsqlTypes;
 
 namespace InventorySystem.Models;
 
@@ -29,6 +30,8 @@ public class Product
 
     [Column("category_id")]
     public long CategoryId { get; set; }
+
+    public NpgsqlTsVector SearchVerctor { get; set; } = default!;
 
     [ForeignKey(nameof(CategoryId))]
     public Category? Category { get; set; }

@@ -83,8 +83,8 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
         .AsQueryable();
         if (!string.IsNullOrEmpty(search))
         {
-            query = query.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
-            totalItemsQuery = totalItemsQuery.Where(p => p.Name.Contains(search) || p.Sku.Contains(search));
+            query = query.Where(p => p.SearchVerctor.Matches(search));
+            totalItemsQuery = totalItemsQuery.Where(p => p.SearchVerctor.Matches(search));
         }
         if (categoryId.HasValue)
         {
