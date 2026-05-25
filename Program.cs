@@ -62,6 +62,7 @@ builder.Services.AddSwaggerGen(ops =>
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<StockService>();
+builder.Services.AddScoped<SummaryService>();
 
 //add cords
 builder.Services.AddCors(ops =>
@@ -86,6 +87,7 @@ if (app.Environment.IsDevelopment())
 app.MapCategoryRoutes();
 app.MapProductRoutes();
 app.MapStockRoutes();
+app.MapSummaryRoutes();
 
 // add middleware
 app.UseMiddleware<GlobalException>();
