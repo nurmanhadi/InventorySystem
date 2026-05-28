@@ -21,7 +21,12 @@ public static class ProductRouter
                 return Results.Created(
                     $"/api/products/{response.Id}",
                     new WebResponse<ProductResponse>(message: "Product created successfully", data: response));
-            });
+            })
+            .Produces<WebResponse<ProductResponse>>(201)
+            .Produces<WebResponse<string>>(400)
+            .Produces<WebResponse<string>>(404)
+            .Produces<WebResponse<string>>(500);
+
         // get product by id
         products.MapGet("/{id}", async (
             [FromServices] ProductService productService,
@@ -30,7 +35,11 @@ public static class ProductRouter
         {
             var response = await productService.GetProductById(id);
             return Results.Ok(new WebResponse<ProductWithCategoryResponse>(message: "Product retrieved successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<ProductWithCategoryResponse>>(200)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
+
         // get all products
         products.MapGet("/", async (
             [FromServices] ProductService productService,
@@ -42,7 +51,11 @@ public static class ProductRouter
         {
             var response = await productService.GetAllProducts(page, size, search, categoryId);
             return Results.Ok(new WebResponse<WebPaginationResponse<ProductResponse>>(message: "Products retrieved successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<WebPaginationResponse<ProductResponse>>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(500);
+
         // update product
         products.MapPut("/{id}", async (
             [FromServices] ProductService productService,
@@ -52,7 +65,12 @@ public static class ProductRouter
         {
             await productService.UpdateProduct(id, request);
             return Results.Ok(new WebResponse<ProductResponse>(message: "Product updated successfully"));
-        });
+        })
+        .Produces<WebResponse<ProductResponse>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
+
         // delete product
         products.MapDelete("/{id}", async (
             [FromServices] ProductService productService,
@@ -61,6 +79,9 @@ public static class ProductRouter
         {
             await productService.DeleteProduct(id);
             return Results.Ok(new WebResponse<ProductResponse>(message: "Product deleted successfully"));
-        });
+        })
+        .Produces<WebResponse<ProductResponse>>(200)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
     }
 }

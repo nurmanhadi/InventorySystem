@@ -19,7 +19,11 @@ public static class StockRouter
         {
             await stockService.StockIn(request);
             return Results.Ok(new WebResponse<string>("Stock in successful"));
-        });
+        })
+        .Produces<WebResponse<string>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
 
         // stock out
         stock.MapPost("/out", async (
@@ -29,7 +33,11 @@ public static class StockRouter
         {
             await stockService.StockOut(request);
             return Results.Ok(new WebResponse<string>("Stock out successful"));
-        });
+        })
+        .Produces<WebResponse<string>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
 
         // stock history
         stock.MapGet("/history", async (
@@ -43,6 +51,9 @@ public static class StockRouter
         {
             var response = await stockService.GetStockHistory(page, size, period, productId, type);
             return Results.Ok(new WebResponse<WebPaginationResponse<StockWithProductMinimalResponse>>(message: "Stock history retrieved successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<WebPaginationResponse<StockWithProductMinimalResponse>>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(500);
     }
 }

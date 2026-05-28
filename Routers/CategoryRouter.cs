@@ -21,7 +21,11 @@ public static class CategoryRouter
             return Results.Created(
                 $"/api/categories/{response.Id}",
                 new WebResponse<CategoryResponse>(message: "Category created successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<CategoryResponse>>(201)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(500);
+
         // get category by id
         category.MapGet("/{id}", async (
             [FromServices] CategoryService categoryService,
@@ -30,7 +34,11 @@ public static class CategoryRouter
         {
             var response = await categoryService.GetCategoryById(id);
             return Results.Ok(new WebResponse<CategoryResponse>(message: "Category retrieved successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<CategoryResponse>>(200)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
+
         // get all categories
         category.MapGet("/", async (
             [FromServices] CategoryService categoryService
@@ -38,7 +46,10 @@ public static class CategoryRouter
         {
             var response = await categoryService.GetAllCategories();
             return Results.Ok(new WebResponse<List<CategoryResponse>>(message: "Categories retrieved successfully", data: response));
-        });
+        })
+        .Produces<WebResponse<List<CategoryResponse>>>(200)
+        .Produces<WebResponse<string>>(500);
+
         // update category
         category.MapPut("/{id}", async (
             [FromServices] CategoryService categoryService,
@@ -48,7 +59,12 @@ public static class CategoryRouter
         {
             await categoryService.UpdateCategory(id, request);
             return Results.Ok(new WebResponse<object>(message: "Category updated successfully"));
-        });
+        })
+        .Produces<WebResponse<object>>(200)
+        .Produces<WebResponse<string>>(400)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
+
         // delete category
         category.MapDelete("/{id}", async (
             [FromServices] CategoryService categoryService,
@@ -57,6 +73,9 @@ public static class CategoryRouter
         {
             await categoryService.DeleteCategory(id);
             return Results.Ok(new WebResponse<object>(message: "Category deleted successfully"));
-        });
+        })
+        .Produces<WebResponse<object>>(200)
+        .Produces<WebResponse<string>>(404)
+        .Produces<WebResponse<string>>(500);
     }
 }
