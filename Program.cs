@@ -7,39 +7,37 @@ using InventorySystem.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
-using Serilog.Events;
 using Serilog.Formatting.Compact;
 
-// add logging
-Log.Logger = new LoggerConfiguration()
-    .MinimumLevel.Information()
-    .MinimumLevel.Override(
-        "Microsoft.AspNetCore",
-        LogEventLevel.Warning
-    )
-    .WriteTo.Console(
-    // new RenderedCompactJsonFormatter()
-    )
-    .CreateLogger();
-
 var builder = WebApplication.CreateBuilder(args);
-// add serilog
+
+// logging
+Log.Logger = new LoggerConfiguration()
+    .ReadFrom.Configuration(builder.Configuration)
+    .CreateLogger();
 builder.Host.UseSerilog();
-// add database
+
+// database
 builder.Services.AddDbContextPool<DbInitiate>(ops =>
     ops.UseNpgsql(
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
-// add validation
-builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// configure json request and response
-builder.Services.ConfigureHttpJsonOptions(ops =>
+// cors
+var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
+builder.Services.AddCors(ops =>
 {
-    ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+    ops.AddPolicy("CorsPolicy", policy =>
+    {
+        policy
+            .WithOrigins(allowedOrigins!)
+            .AllowAnyHeader()
+            .AllowAnyMethod();
+    });
 });
-// add swagger
+
+// swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ops =>
 {
@@ -58,22 +56,20 @@ builder.Services.AddSwaggerGen(ops =>
     });
 });
 
-// add services
+// validation
+builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+
+// configure json request and response
+builder.Services.ConfigureHttpJsonOptions(ops =>
+{
+    ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
+// services
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<StockService>();
 builder.Services.AddScoped<SummaryService>();
-
-//add cords
-builder.Services.AddCors(ops =>
-{
-    ops.AddPolicy("InventoryUI", policy =>
-    {
-        policy.WithOrigins(builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>()!)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 var app = builder.Build();
 
@@ -83,14 +79,14 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-// add routes
+// middleware
+app.UseMiddleware<GlobalException>();
+app.UseCors("CorsPolicy");
+
+// routes
 app.MapCategoryRoutes();
 app.MapProductRoutes();
 app.MapStockRoutes();
 app.MapSummaryRoutes();
-
-// add middleware
-app.UseMiddleware<GlobalException>();
-app.UseCors("InventoryUI");
 
 app.Run();
