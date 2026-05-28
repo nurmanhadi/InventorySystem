@@ -7,7 +7,6 @@ using InventorySystem.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
 using Serilog;
-using Serilog.Formatting.Compact;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -65,6 +64,9 @@ builder.Services.ConfigureHttpJsonOptions(ops =>
     ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
+// health check
+builder.Services.AddHealthChecks();
+
 // services
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
@@ -80,8 +82,22 @@ if (app.Environment.IsDevelopment())
 }
 
 // middleware
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHsts();
+    app.UseHttpsRedirection();
+}
+app.UseSerilogRequestLogging(ops =>
+{
+    ops.MessageTemplate = "HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed:0.0000} ms | request_id={RequestId}";
+    ops.EnrichDiagnosticContext = (diag, http) =>
+    {
+        diag.Set("RequestId", http.TraceIdentifier);
+    };
+});
 app.UseMiddleware<GlobalException>();
 app.UseCors("CorsPolicy");
+app.UseHealthChecks("/health");
 
 // routes
 app.MapCategoryRoutes();
