@@ -6,7 +6,13 @@ using InventorySystem.Routers;
 using InventorySystem.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.OpenApi;
+using OpenTelemetry.Trace;
+using OpenTelemetry.Metrics;
+using OpenTelemetry.Logs;
 using Serilog;
+using OpenTelemetry.Resources;
+using OpenTelemetry.Exporter;
+using Npgsql;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -22,6 +28,37 @@ builder.Services.AddDbContextPool<DbInitiate>(ops =>
         builder.Configuration.GetConnectionString("DefaultConnection")
     )
 );
+
+// opentelemetry
+builder.Services.AddOpenTelemetry()
+    .WithTracing(tracing => tracing //tracing
+        .AddAspNetCoreInstrumentation() // Automatic tracking request HTTP in
+        .AddHttpClientInstrumentation() // Automatic tracking request HTTP out
+        .AddNpgsql() // Automatic tracking query to database
+        .AddOtlpExporter(ops =>
+        {
+            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
+            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }))
+    .WithMetrics(metrics => metrics // metrics
+        .AddAspNetCoreInstrumentation() // Automatic tracking request HTTP in
+        .AddHttpClientInstrumentation() // Automatic tracking request HTTP out
+        .AddRuntimeInstrumentation() // Automatic tracking resources CPU, memory, dll
+        .AddOtlpExporter(ops =>
+        {
+            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
+            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
+        }));
+
+builder.Logging.AddOpenTelemetry(logging => // logging
+{
+    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(builder.Configuration["Otel:ServiceName"]!));
+    logging.AddOtlpExporter(ops =>
+        {
+            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
+            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
+        });
+});
 
 // cors
 var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
