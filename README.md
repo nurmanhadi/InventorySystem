@@ -1,293 +1,233 @@
 # InventorySystem
 
-A modern .NET REST API for inventory management, built with .NET 10, PostgreSQL, and OpenTelemetry observability.
+A simple, modern web application for managing your business inventory. Track products, stock levels, and transactions all in one place.
 
-## Overview
+## What is This?
 
-InventorySystem is a RESTful API backend for managing products, stock levels, categories, and inventory transactions. It provides real-time stock tracking, transaction history, and inventory summaries for small to medium-sized businesses.
+InventorySystem helps businesses keep track of their products and inventory. Whether you're managing a small shop or a growing warehouse, this application lets you:
+- Store and organize all your products
+- Track how much stock you have
+- Record when items come in or go out
+- See reports and statistics about your inventory
 
-## Key Features
+## What Can You Do?
 
-- 📦 **Product Management** - Create, update, and manage products with categories
-- 🏷️ **Category Management** - Organize products by categories
-- 📊 **Stock Tracking** - Track stock in/out transactions with full history
-- 📈 **Dashboard Summaries** - Real-time inventory statistics and insights
-- 🔍 **Search & Filter** - Advanced search and filtering capabilities
-- 📝 **Transaction Logging** - Complete audit trail of all stock movements
-- 📡 **Distributed Tracing** - OpenTelemetry integration for observability
-- 🔐 **Input Validation** - FluentValidation for robust data validation
+- 📦 **Add and Manage Products** - Create product listings and organize them by category
+- 🏷️ **Organize by Categories** - Group similar products together for easy management
+- 📊 **Track Stock** - Keep records of items added or removed from inventory
+- 📈 **View Reports** - See statistics about your inventory at a glance
+- 🔍 **Search Products** - Easily find products by name or filter by category
+- 📝 **Keep History** - View a complete record of all stock movements
+- 🔐 **Validate Data** - Ensure data is correct before saving
 
 ## Technology Stack
 
-- **.NET 10.0** - Latest .NET runtime
-- **C# 13** - Modern language features
-- **PostgreSQL** - Reliable relational database
-- **Entity Framework Core 10** - Object-relational mapping
-- **OpenTelemetry** - Distributed tracing and metrics
-- **Serilog** - Structured logging
-- **FluentValidation** - Data annotation validation
-- **Swagger/Swashbuckle** - Interactive API documentation
+**What's Under the Hood?** (You don't need to know this to use the app, but if you're curious...)
 
-## Project Structure
+- **.NET 10.0** - The framework used to build this application
+- **PostgreSQL** - The secure database where all your data is stored
+- **Entity Framework Core** - The system that manages communication between the app and database
+- **Swagger** - The tool that provides interactive documentation for the API
+- **OpenTelemetry** - Monitors the application's performance and tracks how requests move through the system
+- **Serilog** - Records detailed logs of everything that happens, helpful for finding problems
+- **FluentValidation** - Checks that all your data is correct and complete before saving it
+
+## File Organization
+
+Here's how the project is organized (don't worry if this seems confusing - you won't need to touch most of these):
 
 ```
-Routers/           - API endpoint definitions (routes & handlers)
-  ├── CategoryRouter.cs
-  ├── ProductRouter.cs
-  ├── StockRouter.cs
-  └── SummaryRouter.cs
+Routers/           - Handles incoming requests from users
+Routers/CategoryRouter.cs - Manages category requests
+Routers/ProductRouter.cs - Manages product requests
+Routers/StockRouter.cs - Manages stock requests
 
-Services/          - Business logic layer
-  ├── CategoryService.cs
-  ├── ProductService.cs
-  ├── StockService.cs
-  └── SummaryService.cs
+Services/          - The brain of the app (where the work happens)
+Services/CategoryService.cs - Handles category operations
+Services/ProductService.cs - Handles product operations
+Services/StockService.cs - Handles stock operations
 
-Models/            - Domain entities & DbContext
-  ├── Category.cs
-  ├── Product.cs
-  ├── Stock.cs
-  └── DbInitiate.cs
+Models/            - The blueprint for your data
+Models/Category.cs - What a category looks like
+Models/Product.cs - What a product looks like
+Models/Stock.cs - What a stock transaction looks like
 
-DTOs/              - Data transfer objects for API contracts
-  ├── CategoryDto.cs
-  ├── ProductDto.cs
-  ├── StockDto.cs
-  └── SummaryDto.cs
-
-Validations/       - Request validation rules
-  ├── CategoryValidation.cs
-  ├── ProductValidation.cs
-  └── StockValidation.cs
-
-Helpers/           - Utility classes & shared logic
-  ├── WebResponse.cs (standard response wrapper)
-  ├── StockType.cs (stock transaction types)
-  └── HistoryStockPeriod.cs (time period enums)
-
-Middlewares/       - Request/response interceptors
-  └── GlobalException.cs (centralized error handling)
-
-Migrations/        - Database schema versioning
+DTOs/              - How data is formatted when sent/received
+Validations/       - Rules to check if data is correct
+Helpers/           - Useful tools and utilities
+Migrations/        - Record of database changes over time
 ```
 
-## API Endpoints
+## Using the Application
 
-### Category Management (`/categories`)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/` | Create a new category |
-| GET | `/{id}` | Get category by ID |
-| GET | `/` | List all categories |
-| PUT | `/{id}` | Update category |
-| DELETE | `/{id}` | Delete category |
+The application provides different sections for different tasks:
 
-### Product Management (`/products`)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/` | Create a new product |
-| GET | `/{id}` | Get product by ID with category |
-| GET | `/` | List products (with pagination, search, category filter) |
-| PUT | `/{id}` | Update product |
-| DELETE | `/{id}` | Delete product |
+### Managing Categories
+Create and organize product categories (e.g., Electronics, Clothing, Food)
+- **Add** a new category
+- **View** all your categories
+- **Edit** a category
+- **Delete** a category
 
-**Query Parameters for GET `/products`:**
-- `page` (int, default=1) - Page number
-- `size` (int, default=10) - Items per page
-- `search` (string, optional) - Product name search
-- `categoryId` (long, optional) - Filter by category
+### Managing Products
+Add your products to the system
+- **Add** a new product with name, description, price, and category
+- **View** all products or search by name
+- **View details** of a specific product
+- **Edit** product information
+- **Delete** a product
 
-### Stock Management (`/stocks`)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| POST | `/in` | Record incoming stock |
-| POST | `/out` | Record outgoing stock |
-| GET | `/history` | Get stock transaction history |
-| GET | `/{id}` | Get current stock level |
+### Tracking Stock
+Keep track of inventory changes
+- **Add stock** when new items arrive
+- **Remove stock** when items are sold
+- **View history** of all stock movements
+- **Check current levels** of each product
 
-**Query Parameters for GET `/stocks/history`:**
-- `page` (int, default=1) - Page number
-- `size` (int, default=10) - Items per page
-- `period` (HistoryStockPeriod, default=CURRENT) - Time period filter
-- `productId` (long, optional) - Filter by product
-- `type` (StockType, optional) - Filter by transaction type (IN/OUT)
+### Viewing Reports
+See important statistics
+- **Total products** in your system
+- **Total stock value** of all inventory
+- **Stock levels** by product
 
-### Summary & Analytics (`/summary`)
-| Method | Endpoint | Description |
-|--------|----------|-------------|
-| GET | `/` | Get dashboard summary statistics |
+## Getting Started
 
-## Installation & Setup
+### What You Need First
 
-### Prerequisites
-- .NET 10.0 SDK
-- PostgreSQL 12+
-- Visual Studio Code or Visual Studio 2022+
+Before you can run this application, make sure you have:
+1. **.NET 10.0** - Download from [dotnet.microsoft.com](https://dotnet.microsoft.com/download)
+2. **PostgreSQL** - A database program. Download from [postgresql.org](https://www.postgresql.org/download/)
+3. **A code editor** - Visual Studio Code (free) or Visual Studio 2022
 
-### 1. Clone the Repository
+### Step 1: Get the Code
+
+Open your terminal and run:
 ```bash
-git clone <repository-url>
+git clone https://github.com/nurmanhadi/InventorySystem.git
 cd InventorySystem
 ```
 
-### 2. Install Dependencies
+### Step 2: Install Requirements
+
+Let .NET download everything it needs:
 ```bash
 dotnet restore
 ```
 
-### 3. Configure Database Connection
-Edit `appsettings.json` with your PostgreSQL connection string:
+### Step 3: Connect to Your Database
+
+Open the file named `appsettings.json` and update it with your PostgreSQL details:
+
 ```json
 {
-  "AllowedHosts": "*",
   "ConnectionStrings": {
-    "DefaultConnection": "Host=myhost;Username=myname;Password=mypass;Database=mydb"
-  },
-  "Cors": {
-    "AllowedOrigins": [
-      "*"
-    ]
-  },
-  "Serilog": {
-    "Using": [
-      "Serilog.Sinks.Console"
-    ],
-    "MinimumLevel": {
-      "Default": "Information"
-    },
-    "WriteTo": [
-      {
-        "Name": "Console"
-      }
-    ]
-  },
-  "Otel": {
-    "ServiceName": "InventorySystemAPI",
-    "Exporter": {
-      "Otlp": {
-        "Endpoint": "example.com"
-      }
-    }
+    "DefaultConnection": "Host=localhost;Username=postgres;Password=your_password;Database=inventory_db"
   }
 }
 ```
 
-### 4. Run Database Migrations
+**Replace:**
+- `your_password` with your PostgreSQL password
+- `inventory_db` with the name you want for your database
+
+### Step 4: Set Up the Database
+
+Run this command to create all the necessary tables:
 ```bash
 dotnet ef database update
 ```
 
-To create a new migration:
-```bash
-dotnet ef migrations add MigrationName
-```
+### Step 5: Run the Application
 
-### 5. Run the Application
+Start the application:
 ```bash
 dotnet run
 ```
 
-The API will be available at `https://localhost:5044` (or configured URL).
+**You should see:** "Now listening on: https://localhost:5044"
 
-## API Documentation
+Open your web browser and go to: `https://localhost:5044/swagger`
 
-Swagger/OpenAPI documentation is available at:
+Here you can test all the features!
+
+## Testing the Application
+
+Once the application is running, you can test it at:
 ```
 https://localhost:5044/swagger/index.html
 ```
 
-## Development
+This page shows all available features and lets you try them out right there in your browser.
 
-### Build
+## For Developers
+
+### Building the Project
 ```bash
 dotnet build
 ```
 
-### Run Tests
-```bash
-dotnet test
-```
-
-### Watch Mode (auto-restart on changes)
+### Starting the App with Auto-Reload
+Useful during development - the app restarts automatically when you change code:
 ```bash
 dotnet watch run
 ```
 
-## Configuration Files
+## Configuration
 
-- `appsettings.json` - Default configuration
-- `appsettings.Development.json` - Development overrides
-- `appsettings.Production.json` - Production overrides
+The application has different settings for different environments:
 
-## Observability
+- `appsettings.json` - Default settings (general)
+- `appsettings.Development.json` - Settings when developing (testing)
+- `appsettings.Production.json` - Settings for the live version
 
-### Distributed Tracing
-OpenTelemetry tracing is configured to export traces to an OTLP collector. Traces include:
-- HTTP request/response tracking
-- Database queries via PostgreSQL instrumentation
-- Custom application traces
+## Understanding Responses
 
-### Structured Logging
-Serilog is configured for structured logging with:
-- Console output in development
-- JSON formatting for production
-- Automatic request/response logging
+When you interact with the application, it always gives you a response with:
+- **Message** - A description of what happened
+- **Data** - The information you requested
+- **Status Code** - A number indicating success or error
 
-## Error Handling
+### Status Codes Explained
 
-The API uses a standardized `WebResponse<T>` wrapper for all responses:
+- `200` ✓ Success - Everything worked
+- `201` ✓ Created - New item was successfully added
+- `400` ✗ Bad Request - Something in your request was wrong
+- `404` ✗ Not Found - The item you're looking for doesn't exist
+- `500` ✗ Server Error - Something went wrong on the server
 
-```json
-{
-    "data": { /* response data */ },
-    "message": "Operation successful"
-}
-```
+## Sharing Your Application
 
-Errors are caught by the global exception middleware and returned with appropriate HTTP status codes and error messages.
+### Using Docker (Advanced)
 
-## Response Format
+If you want to run the application in a container:
 
-All API responses follow this structure:
-```csharp
-public class WebResponse<T>
-{
-    public string Message { get; set; }
-    public T Data { get; set; }
-    public int StatusCode { get; set; }
-}
-```
-
-## Common HTTP Status Codes
-
-- `200` - Success
-- `201` - Created (POST requests)
-- `400` - Bad Request (validation error)
-- `404` - Not Found
-- `500` - Internal Server Error
-
-## Deployment
-
-### Docker Deployment
 ```bash
 docker build -t inventory-system .
-docker run -p 5000:5000 inventory-system
+
+docker run \
+-e ASPNETCORE_ENVIRONMENT=Production \
+-v ./appsettings.Production.json:/App/appsettings.Production.json \
+-p 5000:5000 inventory-system
 ```
 
-### Published Release Build
+### Preparing for Production
+
+To prepare a final version for deployment:
+
 ```bash
 dotnet publish -c Release -o ./publish
 ```
 
-Deploy the contents of the `./publish` folder to your hosting environment.
+The files in the `publish` folder are ready to upload to your server.
 
-## Contributing
+## Want to Help Improve This?
 
-1. Create a feature branch from `main`
-2. Make your changes with clear commit messages
-3. Ensure all tests pass
-4. Submit a pull request with description
+If you find bugs or have ideas for improvements:
+
+1. Create a new branch with your changes
+2. Make sure everything works
+3. Submit a pull request describing your improvements
 
 ## License
 
-MIT License - See LICENSE file for details
+This project is licensed under the MIT License - See the LICENSE file for details.
