@@ -6,6 +6,7 @@ using NpgsqlTypes;
 namespace InventorySystem.Models;
 
 [Index(nameof(Sku), IsUnique = true)]
+[Index(nameof(CreatedAt), nameof(DeletedAt))]
 [Table("products")]
 public class Product
 {
@@ -27,6 +28,9 @@ public class Product
 
     [Column("created_at")]
     public DateTime CreatedAt { get; set; }
+
+    [Column("Deleted_at")]
+    public DateTime? DeletedAt { get; set; }
 
     [Column("category_id")]
     public long CategoryId { get; set; }
