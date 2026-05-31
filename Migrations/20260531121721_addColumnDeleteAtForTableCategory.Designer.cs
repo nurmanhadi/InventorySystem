@@ -3,6 +3,7 @@ using System;
 using InventorySystem.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 using NpgsqlTypes;
@@ -12,9 +13,11 @@ using NpgsqlTypes;
 namespace InventorySystem.Migrations
 {
     [DbContext(typeof(DbInitiate))]
-    partial class DbInitiateModelSnapshot : ModelSnapshot
+    [Migration("20260531121721_addColumnDeleteAtForTableCategory")]
+    partial class addColumnDeleteAtForTableCategory
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -44,7 +47,7 @@ namespace InventorySystem.Migrations
 
                     b.HasIndex("DeletedAt");
 
-                    b.ToTable("categories", (string)null);
+                    b.ToTable("categories");
                 });
 
             modelBuilder.Entity("InventorySystem.Models.Product", b =>
@@ -100,7 +103,7 @@ namespace InventorySystem.Migrations
                     b.HasIndex("Sku")
                         .IsUnique();
 
-                    b.ToTable("products", (string)null);
+                    b.ToTable("products");
                 });
 
             modelBuilder.Entity("InventorySystem.Models.Stock", b =>
@@ -133,7 +136,7 @@ namespace InventorySystem.Migrations
 
                     b.HasIndex("ProductId", "Type");
 
-                    b.ToTable("stocks", (string)null);
+                    b.ToTable("stocks");
                 });
 
             modelBuilder.Entity("InventorySystem.Models.Product", b =>

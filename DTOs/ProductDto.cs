@@ -18,12 +18,6 @@ public class ProductResponse
 
     [JsonPropertyName("price")]
     public decimal Price { get; set; }
-
-    [JsonPropertyName("created_at")]
-    public DateTime CreatedAt { get; set; }
-
-    [JsonPropertyName("category_id")]
-    public long CategoryId { get; set; }
 }
 
 public class ProductWithCategoryResponse
@@ -42,12 +36,6 @@ public class ProductWithCategoryResponse
 
     [JsonPropertyName("price")]
     public decimal Price { get; set; }
-
-    [JsonPropertyName("created_at")]
-    public DateTime CreatedAt { get; set; }
-
-    [JsonPropertyName("category_id")]
-    public long CategoryId { get; set; }
 
     [JsonPropertyName("category")]
     public CategoryResponse Category { get; set; } = new CategoryResponse();

@@ -40,9 +40,7 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
             Name = product.Name,
             Sku = product.Sku,
             Stock = product.Stock,
-            Price = product.Price,
-            CreatedAt = product.CreatedAt,
-            CategoryId = product.CategoryId
+            Price = product.Price
         };
     }
     // get product by id
@@ -58,8 +56,6 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
             Sku = p.Sku,
             Stock = p.Stock,
             Price = p.Price,
-            CreatedAt = p.CreatedAt,
-            CategoryId = p.CategoryId,
             Category = new CategoryResponse
             {
                 Id = p.Category!.Id,
@@ -102,9 +98,7 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
             Name = p.Name,
             Sku = p.Sku,
             Stock = p.Stock,
-            Price = p.Price,
-            CreatedAt = p.CreatedAt,
-            CategoryId = p.CategoryId
+            Price = p.Price
         }).ToListAsync();
         logger.LogInformation("Products retrieved with count {ProductCount}, page {Page}, pageSize {PageSize}", products.Count, page, pageSize);
         return new WebPaginationResponse<ProductResponse>(products, page, pageSize, totalItems);

@@ -37,7 +37,7 @@ public class CategoryService(DbInitiate db, ILogger<CategoryService> logger, IVa
     {
         var category = await db.Categories
         .AsNoTracking()
-        .Where(c => c.Id == id)
+        .Where(c => c.Id == id && c.DeletedAt == null)
         .Select(c => new CategoryResponse
         {
             Id = c.Id,
@@ -58,6 +58,7 @@ public class CategoryService(DbInitiate db, ILogger<CategoryService> logger, IVa
     {
         var categories = await db.Categories
         .AsNoTracking()
+        .Where(c => c.DeletedAt == null)
         .Select(c => new CategoryResponse
         {
             Id = c.Id,
@@ -70,7 +71,10 @@ public class CategoryService(DbInitiate db, ILogger<CategoryService> logger, IVa
     public async Task UpdateCategory(long id, CategoryUpdateRequest request)
     {
         await CategoryValidation(categoryUpdateRequest: request);
-        var category = await db.Categories.FindAsync(id);
+        var category = await db.Categories
+        .AsNoTracking()
+        .Where(c => c.Id == id && c.DeletedAt == null)
+        .FirstOrDefaultAsync();
         if (category == null)
         {
             logger.LogWarning("Category with id {CategoryId} not found", id);
@@ -83,14 +87,20 @@ public class CategoryService(DbInitiate db, ILogger<CategoryService> logger, IVa
     // delete category
     public async Task DeleteCategory(long id)
     {
-        var category = await db.Categories.FindAsync(id);
+        var category = await db.Categories
+        .Where(c => c.Id == id && c.DeletedAt == null)
+        .FirstOrDefaultAsync();
+
         if (category == null)
         {
             logger.LogWarning("Category with id {CategoryId} not found", id);
             throw new NotFoundException($"category with id {id} not found");
         }
-        db.Categories.Remove(category);
+
+        category.DeletedAt = DateTime.UtcNow;
+
         await db.SaveChangesAsync();
+
         logger.LogInformation("Category with id {CategoryId} deleted", id);
     }
 
