@@ -48,7 +48,7 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
     {
         var product = await db.Products
         .AsNoTracking()
-        .Where(p => p.Id == id)
+        .Where(p => p.Id == id && p.DeletedAt == null)
         .Select(p => new ProductWithCategoryResponse
         {
             Id = p.Id,
@@ -73,10 +73,11 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
     // get all products
     public async Task<WebPaginationResponse<ProductResponse>> GetAllProducts(int page, int pageSize, string? search = null, long? categoryId = null)
     {
-        var totalItemsQuery = db.Products.AsNoTracking().AsQueryable();
+        var totalItemsQuery = db.Products.AsNoTracking().AsQueryable().Where(p => p.DeletedAt == null);
         var query = db.Products
         .AsNoTracking()
-        .AsQueryable();
+        .AsQueryable()
+        .Where(p => p.DeletedAt == null);
         if (!string.IsNullOrEmpty(search))
         {
             query = query.Where(p => p.SearchVerctor.Matches(search));
@@ -107,7 +108,9 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
     public async Task UpdateProduct(long id, ProductUpdateRequest request)
     {
         await ProductValidation(productUpdateRequest: request);
-        var product = await db.Products.FindAsync(id);
+        var product = await db.Products
+        .Where(p => p.Id == id && p.DeletedAt == null)
+        .FirstOrDefaultAsync();
         if (product == null)
         {
             logger.LogWarning("Product with id {ProductId} not found", id);
@@ -141,13 +144,15 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
     // delete product
     public async Task DeleteProduct(long id)
     {
-        var product = await db.Products.FindAsync(id);
+        var product = await db.Products
+        .Where(p => p.Id == id && p.DeletedAt == null)
+        .FirstOrDefaultAsync();
         if (product == null)
         {
             logger.LogWarning("Product with id {ProductId} not found", id);
             throw new NotFoundException($"Product with id {id} not found");
         }
-        db.Products.Remove(product);
+        product.DeletedAt = DateTime.UtcNow;
         await db.SaveChangesAsync();
         logger.LogInformation("Product with id {ProductId} deleted", id);
     }
@@ -155,7 +160,7 @@ class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<P
     // check category exists
     private async Task CheckCategoryExistsAsync(long categoryId)
     {
-        var category = await db.Categories.CountAsync(c => c.Id == categoryId);
+        var category = await db.Categories.CountAsync(c => c.Id == categoryId && c.DeletedAt == null);
         if (category == 0)
         {
             logger.LogWarning("Category with id {CategoryId} not found", categoryId);
