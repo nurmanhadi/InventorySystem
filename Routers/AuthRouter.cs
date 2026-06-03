@@ -43,5 +43,18 @@ public static class AuthRouter
         .Produces<WebResponse<UserResponse>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(500);
+
+        // logout
+        auth.MapPost("/logout", async (HttpContext context) =>
+        {
+            await context.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
+            context.Response.Headers.Append("Cache-Control", "no-cache, no-store, must-revalidate");
+            context.Response.Headers.Append("Pragma", "no-cache");
+            context.Response.Headers.Append("Expires", "0");
+            return Results.Ok(new WebResponse<string>(message: "Logout successful"));
+        })
+        .Produces<WebResponse<string>>(200)
+        .Produces<WebResponse<string>>(500);
     }
+
 }
