@@ -107,31 +107,43 @@ builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
 .AddCookie(ops =>
 {
-    ops.LoginPath = "/auth/login";
-    ops.AccessDeniedPath = "/auth/access-denied";
+    // ops.LoginPath = "/auth/login";
+    // ops.AccessDeniedPath = "/auth/access-denied";
     ops.ExpireTimeSpan = TimeSpan.FromMinutes(60);
     ops.SlidingExpiration = true;
     ops.Cookie.HttpOnly = true;
     ops.Cookie.SameSite = SameSiteMode.Lax;
     ops.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
     ops.Cookie.Name = "InventorySystem.Session";
+
+    ops.Events = new CookieAuthenticationEvents
+    {
+        OnRedirectToLogin = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
+            return Task.CompletedTask;
+        },
+        OnRedirectToAccessDenied = context =>
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return Task.CompletedTask;
+        }
+    };
 });
 
 // authorization
-builder.Services.AddAuthorization(ops =>
+builder.Services.AddAuthorizationBuilder()
+.AddPolicy(RolePolicy.WarehouseOperations.ToString(), policy =>
 {
-    ops.AddPolicy(RolePolicy.WarehouseOperations.ToString(), policy =>
-    {
-        policy.RequireRole(UserRole.Admin.ToString(), UserRole.Staff.ToString());
-    });
-    ops.AddPolicy(RolePolicy.AdminOnly.ToString(), policy =>
-    {
-        policy.RequireRole(UserRole.Admin.ToString());
-    });
-    ops.AddPolicy(RolePolicy.StaffOnly.ToString(), policy =>
-    {
-        policy.RequireRole(UserRole.Staff.ToString());
-    });
+    policy.RequireRole(UserRole.Admin.ToString(), UserRole.Staff.ToString());
+})
+.AddPolicy(RolePolicy.AdminOnly.ToString(), policy =>
+{
+    policy.RequireRole(UserRole.Admin.ToString());
+})
+.AddPolicy(RolePolicy.StaffOnly.ToString(), policy =>
+{
+    policy.RequireRole(UserRole.Staff.ToString());
 });
 
 // services
