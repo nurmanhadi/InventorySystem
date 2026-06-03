@@ -12,7 +12,7 @@ public static class UserRouter
         var users = app.MapGroup("/users").WithTags("User");
 
         // get all users
-        users.MapGet("/users", async (
+        users.MapGet("/", async (
             [FromServices] UserService userService
             ) =>
         {
@@ -23,7 +23,7 @@ public static class UserRouter
         .Produces<WebResponse<string>>(500);
 
         // get user by id
-        users.MapGet("/users/{id}", async (
+        users.MapGet("/{id}", async (
             [FromServices] UserService userService,
             [FromRoute] long id
             ) =>
@@ -36,7 +36,7 @@ public static class UserRouter
         .Produces<WebResponse<string>>(500);
 
         // add user
-        users.MapPost("/users", async (
+        users.MapPost("/", async (
             [FromServices] UserService userService,
             [FromBody] UserAddRequest request
             ) =>
@@ -49,7 +49,7 @@ public static class UserRouter
         .Produces<WebResponse<string>>(500);
 
         // update user
-        users.MapPut("/users/{id}", async (
+        users.MapPut("/{id}", async (
             [FromServices] UserService userService,
             [FromRoute] long id,
             [FromBody] UserUpdateRequest request
@@ -64,7 +64,7 @@ public static class UserRouter
         .Produces<WebResponse<string>>(500);
 
         // delete user
-        users.MapDelete("/users/{id}", async (
+        users.MapDelete("/{id}", async (
             [FromServices] UserService userService,
             [FromRoute] long id
             ) =>
