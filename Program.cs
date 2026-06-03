@@ -13,6 +13,7 @@ using Serilog;
 using OpenTelemetry.Resources;
 using OpenTelemetry.Exporter;
 using Npgsql;
+using Microsoft.AspNetCore.Authentication.Cookies;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -101,14 +102,29 @@ builder.Services.ConfigureHttpJsonOptions(ops =>
     ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// health check
-builder.Services.AddHealthChecks();
+// cookie authentication
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+.AddCookie(ops =>
+{
+    ops.LoginPath = "/auth/login";
+    ops.AccessDeniedPath = "/auth/access-denied";
+    ops.ExpireTimeSpan = TimeSpan.FromMinutes(60);
+    ops.SlidingExpiration = true;
+    ops.Cookie.HttpOnly = true;
+    ops.Cookie.SameSite = SameSiteMode.Lax;
+    ops.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
+    ops.Cookie.Name = "InventorySystem.Session";
+});
+
+// authorization
+builder.Services.AddAuthorization();
 
 // services
 builder.Services.AddScoped<CategoryService>();
 builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<StockService>();
 builder.Services.AddScoped<SummaryService>();
+builder.Services.AddScoped<AuthService>();
 
 var app = builder.Build();
 
@@ -134,12 +150,14 @@ app.UseSerilogRequestLogging(ops =>
 });
 app.UseMiddleware<GlobalException>();
 app.UseCors("CorsPolicy");
-app.UseHealthChecks("/health");
+app.UseAuthentication();
+app.UseAuthorization();
 
 // routes
 app.MapCategoryRoutes();
 app.MapProductRoutes();
 app.MapStockRoutes();
 app.MapSummaryRoutes();
+app.MapAuthRoutes();
 
 app.Run();
