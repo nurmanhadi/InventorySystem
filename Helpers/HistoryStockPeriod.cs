@@ -1,10 +1,13 @@
+using System.Text.Json.Serialization;
+
 namespace InventorySystem.Helpers;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum HistoryStockPeriod
 {
-    CURRENT,
-    LAST_7_DAYS,
-    LAST_30_DAYS,
-    LAST_90_DAYS,
-    YEARLY
+    Current = 1,
+    Last7Days = 2,
+    Last30Days = 3,
+    Last90Days = 4,
+    Yearly = 5
 }

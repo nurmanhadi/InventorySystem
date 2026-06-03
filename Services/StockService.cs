@@ -24,13 +24,13 @@ public class StockService(DbInitiate db, ILogger<StockService> logger, IValidato
             var stock = new Stock
             {
                 ProductId = request.ProductId,
-                Type = StockType.IN,
+                Type = StockType.In,
                 Quantity = request.Quantity,
                 CreatedAt = DateTime.UtcNow
             };
 
             db.Stocks.Add(stock);
-            await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.IN);
+            await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.In);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
             logger.LogInformation("Stock updated for product with id {ProductId}: +{Quantity}", request.ProductId, request.Quantity);
@@ -54,13 +54,13 @@ public class StockService(DbInitiate db, ILogger<StockService> logger, IValidato
             var stock = new Stock
             {
                 ProductId = request.ProductId,
-                Type = StockType.OUT,
+                Type = StockType.Out,
                 Quantity = request.Quantity,
                 CreatedAt = DateTime.UtcNow
             };
 
             db.Stocks.Add(stock);
-            await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.OUT);
+            await UpdateStockProductAsync(request.ProductId, request.Quantity, StockType.Out);
             await db.SaveChangesAsync();
             await transaction.CommitAsync();
             logger.LogInformation("Stock updated for product with id {ProductId}: -{Quantity}", request.ProductId, request.Quantity);
@@ -93,11 +93,11 @@ public class StockService(DbInitiate db, ILogger<StockService> logger, IValidato
         var tomorrow = today.AddDays(1);
         query = period switch
         {
-            HistoryStockPeriod.CURRENT => query.Where(s => s.CreatedAt >= today && s.CreatedAt < tomorrow),
-            HistoryStockPeriod.LAST_7_DAYS => query.Where(s => s.CreatedAt >= now.AddDays(-7)),
-            HistoryStockPeriod.LAST_30_DAYS => query.Where(s => s.CreatedAt >= now.AddDays(-30)),
-            HistoryStockPeriod.LAST_90_DAYS => query.Where(s => s.CreatedAt >= now.AddDays(-90)),
-            HistoryStockPeriod.YEARLY => query.Where(s => s.CreatedAt >= now.AddYears(-1)),
+            HistoryStockPeriod.Current => query.Where(s => s.CreatedAt >= today && s.CreatedAt < tomorrow),
+            HistoryStockPeriod.Last7Days => query.Where(s => s.CreatedAt >= now.AddDays(-7)),
+            HistoryStockPeriod.Last30Days => query.Where(s => s.CreatedAt >= now.AddDays(-30)),
+            HistoryStockPeriod.Last90Days => query.Where(s => s.CreatedAt >= now.AddDays(-90)),
+            HistoryStockPeriod.Yearly => query.Where(s => s.CreatedAt >= now.AddYears(-1)),
             _ => query
         };
 
@@ -141,10 +141,10 @@ public class StockService(DbInitiate db, ILogger<StockService> logger, IValidato
         var product = await db.Products.FindAsync(productId) ?? throw new NotFoundException($"Product with id {productId} not found");
         switch (type)
         {
-            case StockType.IN:
+            case StockType.In:
                 product.Stock += quantity;
                 break;
-            case StockType.OUT:
+            case StockType.Out:
                 if (product.Stock < quantity)
                 {
                     logger.LogWarning("Not enough stock for product with id {ProductId}", productId);
