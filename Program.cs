@@ -74,6 +74,12 @@ builder.Services.AddCors(ops =>
     });
 });
 
+// configure json request and response
+builder.Services.ConfigureHttpJsonOptions(ops =>
+{
+    ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
+});
+
 // swagger
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen(ops =>
@@ -95,12 +101,6 @@ builder.Services.AddSwaggerGen(ops =>
 
 // validation
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
-
-// configure json request and response
-builder.Services.ConfigureHttpJsonOptions(ops =>
-{
-    ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
-});
 
 // cookie authentication
 builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
@@ -125,6 +125,7 @@ builder.Services.AddScoped<ProductService>();
 builder.Services.AddScoped<StockService>();
 builder.Services.AddScoped<SummaryService>();
 builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
@@ -159,5 +160,6 @@ app.MapProductRoutes();
 app.MapStockRoutes();
 app.MapSummaryRoutes();
 app.MapAuthRoutes();
+app.MapUserRoutes();
 
 app.Run();

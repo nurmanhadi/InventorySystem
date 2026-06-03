@@ -1,8 +1,11 @@
+using System.Text.Json.Serialization;
+
 namespace InventorySystem.Helpers;
 
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum UserRole
 {
-    ADMIN,
-    STAFF,
-    MANAGER
+    Admin = 1,
+    Staff = 2,
+    Manager = 3
 }

@@ -14,3 +14,27 @@ public class UserResponse
     [JsonPropertyName("role")]
     public UserRole Role { get; set; }
 }
+
+public class UserAddRequest
+{
+    [JsonPropertyName("username")]
+    public string Username { get; set; } = string.Empty;
+
+    [JsonPropertyName("password")]
+    public string Password { get; set; } = string.Empty;
+
+    [JsonPropertyName("role")]
+    public UserRole Role { get; set; }
+}
+
+public class UserUpdateRequest
+{
+    [JsonPropertyName("username")]
+    public string? Username { get; set; }
+
+    [JsonPropertyName("password")]
+    public string? Password { get; set; }
+
+    [JsonPropertyName("role")]
+    public UserRole? Role { get; set; }
+}
