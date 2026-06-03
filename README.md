@@ -2,121 +2,257 @@
 
 A simple, modern web application for managing your business inventory. Track products, stock levels, and transactions all in one place.
 
-## What is This?
+---
 
-InventorySystem helps businesses keep track of their products and inventory. Whether you're managing a small shop or a growing warehouse, this application lets you:
-- Store and organize all your products
-- Track how much stock you have
-- Record when items come in or go out
-- See reports and statistics about your inventory
+## Table of Contents
 
-## What Can You Do?
+1. [Overview](#overview)
+2. [Key Features](#key-features)
+3. [Technology Stack](#technology-stack)
+4. [Project Structure](#project-structure)
+5. [What Can You Do](#what-can-you-do)
+6. [Getting Started](#getting-started)
+   - [Requirements](#requirements)
+   - [Installation Steps](#installation-steps)
+   - [Database Setup](#database-setup)
+7. [Running the Application](#running-the-application)
+8. [Testing the Application](#testing-the-application)
+9. [For Developers](#for-developers)
+10. [Configuration](#configuration)
+11. [API Documentation](#api-documentation)
+12. [Deployment](#deployment)
+13. [Contributing](#contributing)
+14. [License](#license)
 
-- 📦 **Add and Manage Products** - Create product listings and organize them by category
-- 🏷️ **Organize by Categories** - Group similar products together for easy management
-- 📊 **Track Stock** - Keep records of items added or removed from inventory
-- 📈 **View Reports** - See statistics about your inventory at a glance
-- 🔍 **Search Products** - Easily find products by name or filter by category
-- 📝 **Keep History** - View a complete record of all stock movements
-- 🔐 **Validate Data** - Ensure data is correct before saving
+---
+
+## Overview
+
+InventorySystem is a web-based application designed to help businesses keep track of their products and inventory. Whether you're managing a small shop or a growing warehouse, this application lets you:
+
+- Store and organize all your products in one central place
+- Track how much stock you have at any moment
+- Record when items arrive or leave your warehouse
+- See important reports and statistics about your inventory
+- Search and filter products by name or category
+- Maintain a complete history of all stock movements
+
+**Who is this for?**
+- Shop owners managing multiple products
+- Warehouse managers tracking inventory levels
+- Businesses that need to monitor stock movements
+- Anyone who needs organized product and inventory management
+
+---
+
+## Key Features
+
+- 📦 **Product Management** - Create, view, update, and delete products
+- 🏷️ **Category Organization** - Organize products into categories for better management
+- 📊 **Stock Tracking** - Record items coming in and going out of inventory
+- 📈 **Inventory Reports** - View statistics and summaries of your inventory
+- 🔍 **Product Search** - Easily find products by name or filter by category
+- 📝 **Stock History** - Complete record of all stock movements with timestamps
+- 🔐 **Data Validation** - Ensures all data is correct before saving
+- 👥 **User Management** - Create and manage different user roles with specific permissions
+- 🔐 **Secure Authentication** - Password-protected login with role-based access control
+
+---
 
 ## Technology Stack
 
-**What's Under the Hood?** (You don't need to know this to use the app, but if you're curious...)
+**What Powers This Application?**
 
-- **.NET 10.0** - The framework used to build this application
-- **PostgreSQL** - The secure database where all your data is stored
-- **Entity Framework Core** - The system that manages communication between the app and database
-- **Swagger** - The tool that provides interactive documentation for the API
-- **OpenTelemetry** - Monitors the application's performance and tracks how requests move through the system
-- **Serilog** - Records detailed logs of everything that happens, helpful for finding problems
-- **FluentValidation** - Checks that all your data is correct and complete before saving it
+This application is built with modern, reliable technologies:
 
-## File Organization
+| Component | Technology | Purpose |
+|-----------|-----------|---------|
+| **Backend Framework** | .NET 10.0 | The main framework that runs the application |
+| **Database** | PostgreSQL | Secure database that stores all your data |
+| **ORM (Data Access)** | Entity Framework Core | Makes it easy to work with the database |
+| **Password Security** | BCrypt.Net-Next | Safely encrypts and stores user passwords |
+| **API Documentation** | Swagger | Shows all available features and lets you test them |
+| **Data Validation** | FluentValidation | Checks that all your data is correct before saving |
+| **Performance Monitoring** | OpenTelemetry | Tracks how the application performs and responds |
+| **Logging** | Serilog | Records detailed information about what happens in the app |
 
-Here's how the project is organized (don't worry if this seems confusing - you won't need to touch most of these):
+**Why these technologies?**
+- .NET is fast, secure, and widely used for business applications
+- PostgreSQL is reliable and can handle large amounts of data
+- Swagger makes it easy to understand and use the API
+- OpenTelemetry helps identify and fix performance issues
+
+---
+
+## Project Structure
+
+Here's how the code is organized:
 
 ```
-Routers/           - Handles incoming requests from users
-Routers/CategoryRouter.cs - Manages category requests
-Routers/ProductRouter.cs - Manages product requests
-Routers/StockRouter.cs - Manages stock requests
+Routers/                     - Handles incoming requests and routes
+├── Auth                     - User login and logout
+├── Category                 - Product category management
+├── Product                  - Product management
+├── Stock                    - Stock movement tracking
+├── User                     - User account management
+└── Summary                  - Inventory reports
 
-Services/          - The brain of the app (where the work happens)
-Services/CategoryService.cs - Handles category operations
-Services/ProductService.cs - Handles product operations
-Services/StockService.cs - Handles stock operations
+Services/                    - Business logic and operations
+├── Auth                     - Authentication logic
+├── Category                 - Category operations
+├── Product                  - Product operations
+├── Stock                    - Stock operations
+├── User                     - User operations
+└── Summary                  - Summary generation
 
-Models/            - The blueprint for your data
-Models/Category.cs - What a category looks like
-Models/Product.cs - What a product looks like
-Models/Stock.cs - What a stock transaction looks like
+Models/                      - Database structure
+├── Category                 - Category database model
+├── Product                  - Product database model
+├── Stock                    - Stock transaction model
+└── User                     - User database model
 
-DTOs/              - How data is formatted when sent/received
-Validations/       - Rules to check if data is correct
-Helpers/           - Useful tools and utilities
-Migrations/        - Record of database changes over time
+DTOs/                        - Data transfer objects (how data is sent/received)
+├── Auth                     - Authentication data
+├── Category                 - Category data
+├── Product                  - Product data
+├── Stock                    - Stock data
+└── User                     - User data
+
+Validations/                 - Rules to validate incoming data
+├── Auth                     - Authentication validation
+├── Product                  - Product validation
+├── Category                 - Category validation
+└── Stock                    - Stock validation
+
+Helpers/                     - Helpful utilities
+├── RolePolicy               - User role definitions
+├── WebResponse              - Standard API response format
+└── HistoryStockPeriod       - Stock history time periods
+
+Migrations/                  - Database history (auto-generated)
+Properties/                  - Application settings
+Configuration Files/         - Environment-specific settings
 ```
 
-## Using the Application
+**What this means:**
+- **Routers** receive requests from users and direct them to the right place
+- **Services** do all the actual work (creating, updating, deleting items)
+- **Models** define what your data looks like
+- **DTOs** format the data for sending and receiving
+- **Validations** check that data is correct
+- **Helpers** provide useful tools and utilities
 
-The application provides different sections for different tasks:
+---
 
-### Managing Categories
-Create and organize product categories (e.g., Electronics, Clothing, Food)
-- **Add** a new category
-- **View** all your categories
-- **Edit** a category
-- **Delete** a category
+## What Can You Do
 
-### Managing Products
-Add your products to the system
-- **Add** a new product with name, description, price, and category
-- **View** all products or search by name
-- **View details** of a specific product
-- **Edit** product information
-- **Delete** a product
+### 🏷️ Category Management
+Organize your products into groups
+- Create new categories (e.g., Electronics, Clothing, Food)
+- View all your categories
+- Edit category names
+- Delete categories you no longer need
 
-### Tracking Stock
-Keep track of inventory changes
-- **Add stock** when new items arrive
-- **Remove stock** when items are sold
-- **View history** of all stock movements
-- **Check current levels** of each product
+### 📦 Product Management
+Add and manage your products
+- Create new products with name, price, and category
+- Assign a unique SKU (Stock Keeping Unit) to each product
+- View all products or search by name
+- Filter products by category
+- Edit product details
+- Delete products
 
-### Viewing Reports
+### 📊 Stock Management
+Track items moving in and out
+- **Stock In**: Record when new items arrive at your warehouse
+- **Stock Out**: Record when items are sold or removed
+- View complete stock history with dates and times
+- Filter history by product, type, or time period
+- Add notes to stock movements for reference
+
+### 📈 Inventory Reports
 See important statistics
-- **Total products** in your system
-- **Total stock value** of all inventory
-- **Stock levels** by product
+- Total number of products
+- Total value of all inventory
+- Number of items in low stock
+- Total number of items in stock
+
+### 👥 User Management (Admin Only)
+Manage who can access the system
+- Create new user accounts
+- Set user roles and permissions
+- Edit user information
+- Remove users from the system
+
+---
 
 ## Getting Started
 
-### What You Need First
+### Requirements
+
+**What You Need Installed First:**
 
 Before you can run this application, make sure you have:
-1. **.NET 10.0** - Download from [dotnet.microsoft.com](https://dotnet.microsoft.com/download)
-2. **PostgreSQL** - A database program. Download from [postgresql.org](https://www.postgresql.org/download/)
-3. **A code editor** - Visual Studio Code (free) or Visual Studio 2022
 
-### Step 1: Get the Code
+1. **.NET 10.0 SDK** (or later)
+   - Download from: [dotnet.microsoft.com](https://dotnet.microsoft.com/download)
+   - This is the runtime environment for the application
+
+2. **PostgreSQL Database** (version 12 or later)
+   - Download from: [postgresql.org](https://www.postgresql.org/download/)
+   - This is where all your data will be stored
+
+3. **A Code Editor** (choose one)
+   - **Visual Studio Code** (free, lightweight) - Recommended for beginners
+   - **Visual Studio Community** (free, feature-rich) - Recommended for developers
+   - Any text editor if you're comfortable with the command line
+
+4. **Git** (optional, for cloning the repository)
+   - Download from: [git-scm.com](https://git-scm.com/)
+
+**How to Check If You Have Them:**
+
+Open your terminal/command prompt and run:
+```bash
+dotnet --version
+psql --version
+```
+
+Both should show version numbers. If not, you need to install them.
+
+### Installation Steps
+
+**Step 1: Get the Code**
 
 Open your terminal and run:
 ```bash
-git clone https://github.com/nurmanhadi/InventorySystem.git
+git clone https://github.com/yourusername/InventorySystem.git
 cd InventorySystem
 ```
 
-### Step 2: Install Requirements
+Or if you don't have Git, download the ZIP file from GitHub and extract it.
 
-Let .NET download everything it needs:
+**Step 2: Restore Dependencies**
+
+This downloads all the code packages the application needs:
 ```bash
 dotnet restore
 ```
 
-### Step 3: Connect to Your Database
+**Step 3: Create the Database**
 
-Open the file named `appsettings.json` and update it with your PostgreSQL details:
+Using PostgreSQL, create a new database:
+```bash
+createdb inventory_db
+```
+
+Or use pgAdmin (PostgreSQL's graphical tool) if you prefer clicking instead of typing.
+
+### Database Setup
+
+**Step 1: Configure Database Connection**
+
+Open the file `appsettings.json` in your project and find this section:
 
 ```json
 {
@@ -126,108 +262,309 @@ Open the file named `appsettings.json` and update it with your PostgreSQL detail
 }
 ```
 
-**Replace:**
-- `your_password` with your PostgreSQL password
-- `inventory_db` with the name you want for your database
+**Replace these values:**
+- `your_password` → Your PostgreSQL password
+- `inventory_db` → Name of your database (must match what you created)
+- `localhost` → Your database server address (usually `localhost` for local development)
+- `postgres` → Your PostgreSQL username (usually `postgres` by default)
 
-### Step 4: Set Up the Database
+**Example:**
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Username=postgres;Password=mySecurePassword123;Database=inventory_system"
+  }
+}
+```
 
-Run this command to create all the necessary tables:
+**Step 2: Apply Database Migrations**
+
+This creates all the necessary tables in your database:
 ```bash
 dotnet ef database update
 ```
 
-### Step 5: Run the Application
+You should see messages showing the tables being created. If you see "Done." at the end, you're good!
 
-Start the application:
+**What are migrations?**
+Migrations are automatic scripts that set up your database structure. They ensure all users have the same database layout.
+
+---
+
+## Running the Application
+
+**Starting the Application:**
+
 ```bash
 dotnet run
 ```
 
-**You should see:** "Now listening on: https://localhost:5044"
+**What you'll see:**
+```
+Now listening on: https://localhost:5044
+Now listening on: http://localhost:5000
+Press Ctrl+C to quit
+```
 
-Open your web browser and go to: `https://localhost:5044/swagger`
+This means the application is running! Your local server is ready to use.
 
-Here you can test all the features!
+**Access the Application:**
+
+Open your web browser and go to:
+```
+https://localhost:5044
+```
+
+You should see the Swagger documentation page which shows all available features.
+
+---
 
 ## Testing the Application
 
-Once the application is running, you can test it at:
+**Using Swagger (Recommended for Beginners)**
+
+Once the application is running, go to:
 ```
 https://localhost:5044/swagger/index.html
 ```
 
-This page shows all available features and lets you try them out right there in your browser.
+This page shows:
+- All available endpoints (features)
+- What data each endpoint needs
+- What response you'll get back
+- A button to try each feature directly in your browser
+
+**To test an endpoint:**
+1. Click on the endpoint you want to test
+2. Click "Try it out"
+3. Fill in the required information
+4. Click "Execute"
+5. See the response at the bottom
+
+**First Test - Login:**
+1. Find the "auth-login" endpoint
+2. Click it to expand
+3. Click "Try it out"
+4. Enter a username and password
+5. Click "Execute"
+6. If you see a 400 error, that's normal - you probably don't have a user yet
+
+---
 
 ## For Developers
 
+**If you're developing or making changes to the code:**
+
 ### Building the Project
+Compiles the code without running it:
 ```bash
 dotnet build
 ```
 
-### Starting the App with Auto-Reload
-Useful during development - the app restarts automatically when you change code:
+### Running with Auto-Reload
+The application restarts automatically when you change code:
 ```bash
 dotnet watch run
 ```
 
+Perfect for development - just save your file and see changes immediately.
+
+### Running Tests (If Available)
+```bash
+dotnet test
+```
+
+### Checking for Issues
+```bash
+dotnet build --no-restore
+```
+
+### Creating a Migration
+When you change the database structure:
+```bash
+dotnet ef migrations add MigrationName
+dotnet ef database update
+```
+
+---
+
 ## Configuration
 
-The application has different settings for different environments:
+The application has different settings for different situations:
 
-- `appsettings.json` - Default settings (general)
-- `appsettings.Development.json` - Settings when developing (testing)
-- `appsettings.Production.json` - Settings for the live version
+### Configuration Files
 
-## Understanding Responses
+**`appsettings.json`** (Default Settings)
+- Used by default
+- Contains general configuration
 
-When you interact with the application, it always gives you a response with:
-- **Message** - A description of what happened
-- **Data** - The information you requested
-- **Status Code** - A number indicating success or error
+**`appsettings.Development.json`** (Development Settings)
+- Used when you're developing and testing
+- More detailed logging
+- Easier debugging
 
-### Status Codes Explained
+**`appsettings.Production.json`** (Production Settings)
+- Used when the app is live
+- More secure settings
+- Less detailed logging to improve performance
 
-- `200` ✓ Success - Everything worked
-- `201` ✓ Created - New item was successfully added
-- `400` ✗ Bad Request - Something in your request was wrong
-- `404` ✗ Not Found - The item you're looking for doesn't exist
-- `500` ✗ Server Error - Something went wrong on the server
+### Environment Variables
 
-## Sharing Your Application
+You can control which configuration file is used:
 
-### Using Docker (Advanced)
-
-If you want to run the application in a container:
-
+**For Development:**
 ```bash
-docker build -t inventory-system .
-
-docker run \
--e ASPNETCORE_ENVIRONMENT=Production \
--v ./appsettings.Production.json:/App/appsettings.Production.json \
--p 5000:5000 inventory-system
+set ASPNETCORE_ENVIRONMENT=Development
+dotnet run
 ```
+
+**For Production:**
+```bash
+set ASPNETCORE_ENVIRONMENT=Production
+dotnet run
+```
+
+---
+
+## API Documentation
+
+For detailed information about all available API endpoints, request/response formats, and examples, please refer to:
+
+👉 **[API Documentation](./Docs/api-doc.md)**
+
+This comprehensive guide includes:
+- Authentication endpoints
+- Product management endpoints
+- Category management endpoints
+- Stock tracking endpoints
+- Inventory summary endpoints
+- User management endpoints
+- Status codes and error handling
+- Request/response examples
+- Role-based access control information
+
+---
+
+## Deployment
 
 ### Preparing for Production
 
-To prepare a final version for deployment:
+**Create a Release Build:**
+
+This creates an optimized version ready for your live server:
 
 ```bash
 dotnet publish -c Release -o ./publish
 ```
 
-The files in the `publish` folder are ready to upload to your server.
+The files in the `publish` folder are what you upload to your server.
 
-## Want to Help Improve This?
+### Using Docker (Advanced)
 
-If you find bugs or have ideas for improvements:
+If you want to run the application in a container:
 
-1. Create a new branch with your changes
-2. Make sure everything works
-3. Submit a pull request describing your improvements
+**Step 1: Build the Docker Image**
+```bash
+docker build -t inventory-system .
+```
+
+**Step 2: Run the Container**
+```bash
+docker run \
+  -e ASPNETCORE_ENVIRONMENT=Production \
+  -v ./appsettings.Production.json:/App/appsettings.Production.json \
+  -p 5000:5000 \
+  inventory-system
+```
+
+**What does this do?**
+- Creates a container with the application
+- Uses Production settings
+- Exposes the application on port 5000
+- Uses your production configuration file
+
+### Deploying to a Server
+
+**General Steps:**
+
+1. Prepare a Release build
+2. Upload files to your server
+3. Configure database connection
+4. Install .NET Runtime on the server
+5. Start the application
+6. Set up a reverse proxy (nginx, IIS, etc.)
+7. Enable HTTPS
+
+**Recommended Hosting Providers:**
+- Azure (Microsoft)
+- AWS
+- DigitalOcean
+- Heroku
+- Any server with .NET Runtime installed
+
+---
+
+## Contributing
+
+We welcome improvements! Here's how to help:
+
+**Before Making Changes:**
+1. Create a new branch with a descriptive name
+2. Make your improvements
+3. Test everything thoroughly
+4. Make sure the code is clean and follows the project style
+
+**Submitting Your Changes:**
+1. Commit your changes with clear messages
+2. Push to your branch
+3. Open a Pull Request describing what you changed and why
+4. Wait for review
+
+**What Makes a Good Contribution:**
+- Bug fixes with explanations
+- New features that help users
+- Documentation improvements
+- Code quality improvements
+- Tests for new features
+
+---
 
 ## License
 
-This project is licensed under the MIT License - See the LICENSE file for details.
+This project is licensed under the **MIT License**.
+
+This means:
+- ✓ You can use this code freely
+- ✓ You can modify it
+- ✓ You can distribute it
+- ✓ You can use it in commercial projects
+
+**The only requirement:** Include the original license file when you distribute it.
+
+See the [LICENSE.md](LICENSE.md) file for full details.
+
+---
+
+## Need Help?
+
+### Common Issues
+
+**"Database connection failed"**
+- Check your PostgreSQL is running
+- Verify the connection string in `appsettings.json`
+- Make sure the database exists
+
+**"Port 5044 is already in use"**
+- Change the port in `Properties/launchSettings.json`
+- Or stop the application using that port
+
+**"Database migrations failed"**
+- Ensure PostgreSQL is running
+- Delete the database and try `dotnet ef database update` again
+- Check your connection string is correct
+
+### Getting More Help
+
+- Check the [API Documentation](Docs/api-doc.md) for endpoint details
+- Review the [Project Structure](#project-structure) section
+- Check application logs for detailed error messages
