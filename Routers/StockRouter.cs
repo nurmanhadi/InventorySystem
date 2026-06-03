@@ -44,7 +44,7 @@ public static class StockRouter
             [FromServices] StockService stockService,
             [FromQuery] int page = 1,
             [FromQuery] int size = 10,
-            [FromQuery] HistoryStockPeriod period = HistoryStockPeriod.CURRENT,
+            [FromQuery] HistoryStockPeriod period = HistoryStockPeriod.Current,
             [FromQuery] long? productId = null,
             [FromQuery] StockType? type = null
             ) =>
