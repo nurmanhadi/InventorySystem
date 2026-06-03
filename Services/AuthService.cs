@@ -43,7 +43,7 @@ public class AuthService(DbInitiate db, ILogger<AuthService> logger, IValidator<
     }
 
     // validation
-    private async Task authValidation(AuthLoginRequest? authLoginRequest = null)
+    private async Task AuthValidation(AuthLoginRequest? authLoginRequest = null)
     {
         if (authLoginRequest != null)
         {
