@@ -22,6 +22,7 @@ public static class CategoryRouter
                 $"/api/categories/{response.Id}",
                 new WebResponse<CategoryResponse>(message: "Category created successfully", data: response));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<CategoryResponse>>(201)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(500);
@@ -35,6 +36,7 @@ public static class CategoryRouter
             var response = await categoryService.GetCategoryById(id);
             return Results.Ok(new WebResponse<CategoryResponse>(message: "Category retrieved successfully", data: response));
         })
+        .RequireAuthorization(RolePolicy.WarehouseOperations.ToString())
         .Produces<WebResponse<CategoryResponse>>(200)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);
@@ -47,6 +49,7 @@ public static class CategoryRouter
             var response = await categoryService.GetAllCategories();
             return Results.Ok(new WebResponse<List<CategoryResponse>>(message: "Categories retrieved successfully", data: response));
         })
+        .RequireAuthorization(RolePolicy.WarehouseOperations.ToString())
         .Produces<WebResponse<List<CategoryResponse>>>(200)
         .Produces<WebResponse<string>>(500);
 
@@ -60,6 +63,7 @@ public static class CategoryRouter
             await categoryService.UpdateCategory(id, request);
             return Results.Ok(new WebResponse<object>(message: "Category updated successfully"));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<object>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(404)
@@ -74,6 +78,7 @@ public static class CategoryRouter
             await categoryService.DeleteCategory(id);
             return Results.Ok(new WebResponse<object>(message: "Category deleted successfully"));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<object>>(200)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);

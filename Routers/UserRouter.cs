@@ -19,6 +19,7 @@ public static class UserRouter
             var users = await userService.GetAllUsers();
             return Results.Ok(new WebResponse<List<UserResponse>>(message: "Users retrieved successfully", data: users));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<List<UserResponse>>>(200)
         .Produces<WebResponse<string>>(500);
 
@@ -31,6 +32,7 @@ public static class UserRouter
             var user = await userService.GetUserById(id);
             return Results.Ok(new WebResponse<UserResponse>(message: "User retrieved successfully", data: user));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<UserResponse>>(200)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);
@@ -44,6 +46,7 @@ public static class UserRouter
             var user = await userService.AddUser(request);
             return Results.Created($"/users/{user.Id}", new WebResponse<UserResponse>(message: "User created successfully", data: user));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<UserResponse>>(201)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(500);
@@ -58,6 +61,7 @@ public static class UserRouter
             await userService.UpdateUser(id, request);
             return Results.Ok(new WebResponse<string>(message: "User updated successfully", data: null));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(404)
@@ -72,6 +76,7 @@ public static class UserRouter
             await userService.DeleteUser(id);
             return Results.Ok(new WebResponse<string>(message: "User deleted successfully", data: null));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);

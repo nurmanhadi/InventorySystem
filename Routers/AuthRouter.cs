@@ -53,6 +53,7 @@ public static class AuthRouter
             context.Response.Headers.Append("Expires", "0");
             return Results.Ok(new WebResponse<string>(message: "Logout successful"));
         })
+        .RequireAuthorization(RolePolicy.WarehouseOperations.ToString())
         .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(500);
     }

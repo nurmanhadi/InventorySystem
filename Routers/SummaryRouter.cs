@@ -16,6 +16,7 @@ public static class SummaryRouter
             var response = await summaryService.GetSummary();
             return Results.Ok(new WebResponse<SummaryResponse>(message: "Summary retrieved successfully", data: response));
         })
+        .RequireAuthorization(RolePolicy.AdminOnly.ToString())
         .Produces<WebResponse<SummaryResponse>>(200)
         .Produces<WebResponse<string>>(500);
     }

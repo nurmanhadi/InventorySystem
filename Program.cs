@@ -14,6 +14,7 @@ using OpenTelemetry.Resources;
 using OpenTelemetry.Exporter;
 using Npgsql;
 using Microsoft.AspNetCore.Authentication.Cookies;
+using InventorySystem.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -117,7 +118,21 @@ builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationSc
 });
 
 // authorization
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorization(ops =>
+{
+    ops.AddPolicy(RolePolicy.WarehouseOperations.ToString(), policy =>
+    {
+        policy.RequireRole(UserRole.Admin.ToString(), UserRole.Staff.ToString());
+    });
+    ops.AddPolicy(RolePolicy.AdminOnly.ToString(), policy =>
+    {
+        policy.RequireRole(UserRole.Admin.ToString());
+    });
+    ops.AddPolicy(RolePolicy.StaffOnly.ToString(), policy =>
+    {
+        policy.RequireRole(UserRole.Staff.ToString());
+    });
+});
 
 // services
 builder.Services.AddScoped<CategoryService>();

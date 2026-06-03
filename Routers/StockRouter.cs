@@ -20,6 +20,7 @@ public static class StockRouter
             await stockService.StockIn(request);
             return Results.Ok(new WebResponse<string>("Stock in successful"));
         })
+        .RequireAuthorization(RolePolicy.StaffOnly.ToString())
         .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(404)
@@ -34,6 +35,7 @@ public static class StockRouter
             await stockService.StockOut(request);
             return Results.Ok(new WebResponse<string>("Stock out successful"));
         })
+        .RequireAuthorization(RolePolicy.StaffOnly.ToString())
         .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(404)
@@ -52,6 +54,7 @@ public static class StockRouter
             var response = await stockService.GetStockHistory(page, size, period, productId, type);
             return Results.Ok(new WebResponse<WebPaginationResponse<StockWithProductMinimalResponse>>(message: "Stock history retrieved successfully", data: response));
         })
+        .RequireAuthorization(RolePolicy.WarehouseOperations.ToString())
         .Produces<WebResponse<WebPaginationResponse<StockWithProductMinimalResponse>>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(500);
