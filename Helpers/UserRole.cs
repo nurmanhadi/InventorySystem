@@ -6,6 +6,5 @@ namespace InventorySystem.Helpers;
 public enum UserRole
 {
     Admin = 1,
-    Staff = 2,
-    Manager = 3
+    Staff = 2
 }
