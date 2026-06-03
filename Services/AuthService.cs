@@ -16,7 +16,7 @@ public class AuthService(DbInitiate db, ILogger<AuthService> logger, IValidator<
     // login
     public async Task<UserResponse> Login(AuthLoginRequest request)
     {
-        await authValidation(authLoginRequest: request);
+        await AuthValidation(authLoginRequest: request);
         var user = await db.Users
         .AsNoTracking()
         .Where(u => u.Username == request.Username)
