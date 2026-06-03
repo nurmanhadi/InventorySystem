@@ -8,6 +8,7 @@ public class DbInitiate(DbContextOptions<DbInitiate> options) : DbContext(option
     public DbSet<Product> Products => Set<Product>();
     public DbSet<Category> Categories => Set<Category>();
     public DbSet<Stock> Stocks => Set<Stock>();
+    public DbSet<User> Users => Set<User>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -22,6 +23,10 @@ public class DbInitiate(DbContextOptions<DbInitiate> options) : DbContext(option
 
         modelBuilder.Entity<Stock>()
             .Property(x => x.Type)
+            .HasConversion<string>();
+
+        modelBuilder.Entity<User>()
+            .Property(x => x.Role)
             .HasConversion<string>();
     }
 }
