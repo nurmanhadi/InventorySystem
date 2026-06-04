@@ -7,7 +7,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Services;
 
-class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<ProductAddRequest> productAddValidator, IValidator<ProductUpdateRequest> productUpdateValidator)
+public class ProductService(DbInitiate db, ILogger<ProductService> logger, IValidator<ProductAddRequest> productAddValidator, IValidator<ProductUpdateRequest> productUpdateValidator)
 {
     private readonly DbInitiate db = db;
     private readonly ILogger<ProductService> logger = logger;
