@@ -89,58 +89,33 @@ This application is built with modern, reliable technologies:
 Here's how the code is organized:
 
 ```
-Routers/                     - Handles incoming requests and routes
-├── Auth                     - User login and logout
-├── Category                 - Product category management
-├── Product                  - Product management
-├── Stock                    - Stock movement tracking
-├── User                     - User account management
-└── Summary                  - Inventory reports
-
-Services/                    - Business logic and operations
-├── Auth                     - Authentication logic
-├── Category                 - Category operations
-├── Product                  - Product operations
-├── Stock                    - Stock operations
-├── User                     - User operations
-└── Summary                  - Summary generation
-
-Models/                      - Database structure
-├── Category                 - Category database model
-├── Product                  - Product database model
-├── Stock                    - Stock transaction model
-└── User                     - User database model
-
-DTOs/                        - Data transfer objects (how data is sent/received)
-├── Auth                     - Authentication data
-├── Category                 - Category data
-├── Product                  - Product data
-├── Stock                    - Stock data
-└── User                     - User data
-
-Validations/                 - Rules to validate incoming data
-├── Auth                     - Authentication validation
-├── Product                  - Product validation
-├── Category                 - Category validation
-└── Stock                    - Stock validation
-
-Helpers/                     - Helpful utilities
-├── RolePolicy               - User role definitions
-├── WebResponse              - Standard API response format
-└── HistoryStockPeriod       - Stock history time periods
-
-Migrations/                  - Database history (auto-generated)
-Properties/                  - Application settings
-Configuration Files/         - Environment-specific settings
+src/InventorySystem/
+├── Routers/                 - Handles incoming requests and routes them to services
+├── Services/                - Contains business logic and core operations
+├── Models/                  - Database entity models and context
+├── DTOs/                    - Data transfer objects for API requests/responses
+├── Validations/             - Data validation rules for incoming requests
+├── Configs/                 - Application configuration and setup
+├── Helpers/                 - Utility functions and constants
+├── Exceptions/              - Custom exception classes
+├── Middlewares/             - HTTP middleware components
+├── Migrations/              - Database migration history (auto-generated)
+├── Properties/              - Application properties and launch settings
+├── Program.cs               - Application entry point and startup configuration
+├── InventorySystem.csproj   - Project file with dependencies
+└── appsettings.*.json       - Environment-specific configuration files
 ```
 
 **What this means:**
 - **Routers** receive requests from users and direct them to the right place
 - **Services** do all the actual work (creating, updating, deleting items)
-- **Models** define what your data looks like
-- **DTOs** format the data for sending and receiving
-- **Validations** check that data is correct
-- **Helpers** provide useful tools and utilities
+- **Models** define what your data looks like in the database
+- **DTOs** format the data for sending and receiving via the API
+- **Validations** check that incoming data meets requirements
+- **Configs** set up authentication, database, CORS, and other services
+- **Helpers** provide utility functions and constants used across the application
+- **Exceptions** handle custom error scenarios
+- **Middlewares** process HTTP requests/responses globally
 
 ---
 
@@ -430,7 +405,7 @@ dotnet run
 
 For detailed information about all available API endpoints, request/response formats, and examples, please refer to:
 
-👉 **[API Documentation](./Docs/api-doc.md)**
+👉 **[API Documentation](./docs/api-doc.md)**
 
 This comprehensive guide includes:
 - Authentication endpoints
