@@ -1,20 +1,9 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
+using InventorySystem.Configs;
 using InventorySystem.Middlewares;
-using InventorySystem.Models;
 using InventorySystem.Routers;
-using InventorySystem.Services;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.OpenApi;
-using OpenTelemetry.Trace;
-using OpenTelemetry.Metrics;
-using OpenTelemetry.Logs;
 using Serilog;
-using OpenTelemetry.Resources;
-using OpenTelemetry.Exporter;
-using Npgsql;
-using Microsoft.AspNetCore.Authentication.Cookies;
-using InventorySystem.Helpers;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -24,56 +13,16 @@ Log.Logger = new LoggerConfiguration()
     .CreateLogger();
 builder.Host.UseSerilog();
 
-// database
-builder.Services.AddDbContextPool<DbInitiate>(ops =>
-    ops.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")
-    )
-);
+// config
+builder.Services
+.AddDatabaseConfig(builder.Configuration)
+.AddOpenTelemetryConfig(builder.Configuration, builder.Logging)
+.AddCorsConfig(builder.Configuration)
+.AddSwaggerConfig()
+.AddAuthenticationConfig()
+.AddAuthorizationConfig()
+.AddApplicationServices();
 
-// opentelemetry
-builder.Services.AddOpenTelemetry()
-    .WithTracing(tracing => tracing //tracing
-        .AddAspNetCoreInstrumentation() // Automatic tracking request HTTP in
-        .AddHttpClientInstrumentation() // Automatic tracking request HTTP out
-        .AddNpgsql() // Automatic tracking query to database
-        .AddOtlpExporter(ops =>
-        {
-            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
-            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
-        }))
-    .WithMetrics(metrics => metrics // metrics
-        .AddAspNetCoreInstrumentation() // Automatic tracking request HTTP in
-        .AddHttpClientInstrumentation() // Automatic tracking request HTTP out
-        .AddRuntimeInstrumentation() // Automatic tracking resources CPU, memory, dll
-        .AddOtlpExporter(ops =>
-        {
-            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
-            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
-        }));
-
-builder.Logging.AddOpenTelemetry(logging => // logging
-{
-    logging.SetResourceBuilder(ResourceBuilder.CreateDefault().AddService(builder.Configuration["Otel:ServiceName"]!));
-    logging.AddOtlpExporter(ops =>
-        {
-            ops.Endpoint = new Uri(builder.Configuration["Otel:Exporter:Otlp:Endpoint"]!);
-            ops.Protocol = OtlpExportProtocol.HttpProtobuf;
-        });
-});
-
-// cors
-var allowedOrigins = builder.Configuration.GetSection("Cors:AllowedOrigins").Get<string[]>();
-builder.Services.AddCors(ops =>
-{
-    ops.AddPolicy("CorsPolicy", policy =>
-    {
-        policy
-            .WithOrigins(allowedOrigins!)
-            .AllowAnyHeader()
-            .AllowAnyMethod();
-    });
-});
 
 // configure json request and response
 builder.Services.ConfigureHttpJsonOptions(ops =>
@@ -81,78 +30,9 @@ builder.Services.ConfigureHttpJsonOptions(ops =>
     ops.SerializerOptions.Converters.Add(new JsonStringEnumConverter());
 });
 
-// swagger
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen(ops =>
-{
-    ops.UseInlineDefinitionsForEnums();
-    ops.SwaggerDoc("v1", new OpenApiInfo
-    {
-        Title = "Inventory System API",
-        Version = "v1",
-        Description = "API for Inventory System",
-        Summary = "API for Inventory System",
-        License = new OpenApiLicense
-        {
-            Name = "MIT License",
-            Url = new Uri("https://opensource.org/licenses/MIT")
-        }
-    });
-});
-
 // validation
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
 
-// cookie authentication
-builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
-.AddCookie(ops =>
-{
-    // ops.LoginPath = "/auth/login";
-    // ops.AccessDeniedPath = "/auth/access-denied";
-    ops.ExpireTimeSpan = TimeSpan.FromMinutes(60);
-    ops.SlidingExpiration = true;
-    ops.Cookie.HttpOnly = true;
-    ops.Cookie.SameSite = SameSiteMode.Lax;
-    ops.Cookie.SecurePolicy = CookieSecurePolicy.SameAsRequest;
-    ops.Cookie.Name = "InventorySystem.Session";
-
-    ops.Events = new CookieAuthenticationEvents
-    {
-        OnRedirectToLogin = context =>
-        {
-            context.Response.StatusCode = StatusCodes.Status401Unauthorized;
-            return Task.CompletedTask;
-        },
-        OnRedirectToAccessDenied = context =>
-        {
-            context.Response.StatusCode = StatusCodes.Status403Forbidden;
-            return Task.CompletedTask;
-        }
-    };
-});
-
-// authorization
-builder.Services.AddAuthorizationBuilder()
-.AddPolicy(RolePolicy.WarehouseOperations.ToString(), policy =>
-{
-    policy.RequireRole(UserRole.Admin.ToString(), UserRole.Staff.ToString());
-})
-.AddPolicy(RolePolicy.AdminOnly.ToString(), policy =>
-{
-    policy.RequireRole(UserRole.Admin.ToString());
-})
-.AddPolicy(RolePolicy.StaffOnly.ToString(), policy =>
-{
-    policy.RequireRole(UserRole.Staff.ToString());
-});
-
-// services
-builder.Services.AddScoped<CategoryService>();
-builder.Services.AddScoped<ProductService>();
-builder.Services.AddScoped<StockService>();
-builder.Services.AddScoped<SummaryService>();
-builder.Services.AddScoped<AuthService>();
-builder.Services.AddScoped<UserService>();
 
 var app = builder.Build();
 
