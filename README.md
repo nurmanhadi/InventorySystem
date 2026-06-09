@@ -65,22 +65,29 @@ InventorySystem is a web-based application designed to help businesses keep trac
 
 This application is built with modern, reliable technologies:
 
-| Component | Technology | Purpose |
-|-----------|-----------|---------|
-| **Backend Framework** | .NET 10.0 | The main framework that runs the application |
-| **Database** | PostgreSQL | Secure database that stores all your data |
-| **ORM (Data Access)** | Entity Framework Core | Makes it easy to work with the database |
-| **Password Security** | BCrypt.Net-Next | Safely encrypts and stores user passwords |
-| **API Documentation** | Swagger | Shows all available features and lets you test them |
-| **Data Validation** | FluentValidation | Checks that all your data is correct before saving |
-| **Performance Monitoring** | OpenTelemetry | Tracks how the application performs and responds |
-| **Logging** | Serilog | Records detailed information about what happens in the app |
+| Component | Technology | Version | Purpose |
+|-----------|-----------|---------|---------|
+| **Backend Framework** | .NET / ASP.NET Core | 10.0 | Web framework using Minimal APIs pattern |
+| **Database** | PostgreSQL | 12+ | Reliable relational database |
+| **ORM (Data Access)** | Entity Framework Core | 10.0.7 | Database abstraction and migrations |
+| **Database Driver** | Npgsql | 10.0.1 | PostgreSQL provider for EF Core |
+| **Password Security** | BCrypt.Net-Next | 4.2.0 | Secure password hashing and verification |
+| **Validation** | FluentValidation | 12.1.1 | Fluent API for validation rules |
+| **API Documentation** | Swagger / Swashbuckle | 10.1.7 | Interactive API documentation |
+| **Logging** | Serilog | 10.0.0 | Structured logging framework |
+| **Monitoring** | OpenTelemetry | 1.15+ | Performance monitoring and tracing |
+| **CORS** | Built-in ASP.NET Core | Native | Cross-origin request handling |
+| **Authentication** | Cookie-based | Native | Built-in ASP.NET Core authentication |
+| **Authorization** | Claims-based | Native | Role-based access control |
 
 **Why these technologies?**
-- .NET is fast, secure, and widely used for business applications
-- PostgreSQL is reliable and can handle large amounts of data
-- Swagger makes it easy to understand and use the API
-- OpenTelemetry helps identify and fix performance issues
+- .NET 10.0 is fast, secure, and modern with native support for async operations
+- Minimal APIs provide a lightweight alternative to traditional MVC
+- PostgreSQL is reliable, scalable, and perfect for structured data
+- Serilog provides structured logging with multiple sink options
+- OpenTelemetry gives complete observability into application performance
+- FluentValidation offers a fluent, readable API for validation rules
+- BCrypt ensures passwords are securely hashed with salt
 
 ---
 
@@ -90,74 +97,110 @@ Here's how the code is organized:
 
 ```
 src/InventorySystem/
-├── Routers/                 - Handles incoming requests and routes them to services
-├── Services/                - Contains business logic and core operations
-├── Models/                  - Database entity models and context
-├── DTOs/                    - Data transfer objects for API requests/responses
-├── Validations/             - Data validation rules for incoming requests
-├── Configs/                 - Application configuration and setup
-├── Helpers/                 - Utility functions and constants
-├── Exceptions/              - Custom exception classes
-├── Middlewares/             - HTTP middleware components
-├── Migrations/              - Database migration history (auto-generated)
+├── Features/                - Feature modules organized by domain
+│   ├── Auth/                - Authentication (Login/Logout)
+│   ├── Categories/          - Category management
+│   ├── Products/            - Product CRUD operations
+│   ├── Stocks/              - Stock In/Out tracking
+│   ├── Reports/             - Inventory reports and summaries
+│   └── Users/               - User management (Admin only)
+├── Infrastructure/
+│   ├── Configs/             - Service configuration (Auth, Database, CORS, Swagger, etc.)
+│   ├── Databases/           - Entity Framework DbContext
+│   └── Middlewares/         - HTTP middleware (Global exception handling)
+├── Shared/
+│   ├── Exceptions/          - Custom exception classes
+│   ├── Helpers/             - Utility functions and constants
+│   ├── Responses/           - API response wrapper classes
+│   └── Validations/         - Fluent validation rules
+├── Migrations/              - Entity Framework database migrations (auto-generated)
 ├── Properties/              - Application properties and launch settings
 ├── Program.cs               - Application entry point and startup configuration
 ├── InventorySystem.csproj   - Project file with dependencies
 └── appsettings.*.json       - Environment-specific configuration files
 ```
 
-**What this means:**
-- **Routers** receive requests from users and direct them to the right place
-- **Services** do all the actual work (creating, updating, deleting items)
-- **Models** define what your data looks like in the database
-- **DTOs** format the data for sending and receiving via the API
-- **Validations** check that incoming data meets requirements
-- **Configs** set up authentication, database, CORS, and other services
-- **Helpers** provide utility functions and constants used across the application
-- **Exceptions** handle custom error scenarios
-- **Middlewares** process HTTP requests/responses globally
+**Architecture Details:**
+
+This project uses **Minimal APIs** pattern with **Feature-Driven Design**:
+
+- **Features** organize code by business domain, each containing:
+  - `{Feature}Router.cs` - HTTP endpoint definitions and request routing
+  - `{Feature}Service.cs` - Business logic and data operations
+  - `{Feature}Dto.cs` - Data transfer objects for API contracts
+  - Entity models - Database entity definitions
+
+- **Infrastructure** centralizes cross-cutting concerns:
+  - **Configs** bootstrap all services (authentication, database, CORS, monitoring, etc.)
+  - **Databases** manages Entity Framework DbContext and data access
+  - **Middlewares** handles global concerns like exception handling
+
+- **Shared** contains reusable components:
+  - **Exceptions** - Custom error types for consistent error handling
+  - **Helpers** - Utility functions and constants
+  - **Responses** - Standard API response wrapper
+  - **Validations** - FluentValidation rules for data integrity
 
 ---
 
 ## What Can You Do
 
+### 🔐 Authentication & Authorization
+Secure access with role-based permissions
+- **Login**: Authenticate using username and password
+- **Logout**: Securely end your session
+- **Role-Based Access Control**: Different permissions for different user roles
+  - **Admin**: Full access to all features
+  - **Warehouse Operations**: Read-only access to inventory data
+  - **Staff**: Limited access to stock operations only
+- **Password Security**: All passwords are securely hashed using BCrypt
+
 ### 🏷️ Category Management
 Organize your products into groups
 - Create new categories (e.g., Electronics, Clothing, Food)
 - View all your categories
-- Edit category names
-- Delete categories you no longer need
+- Edit category names and details
+- Delete categories with soft-delete tracking
+- Filter and search categories
 
 ### 📦 Product Management
 Add and manage your products
 - Create new products with name, price, and category
-- Assign a unique SKU (Stock Keeping Unit) to each product
-- View all products or search by name
+- Assign unique SKU (Stock Keeping Unit) to each product
+- View all products with pagination
+- Search products by name or keywords
 - Filter products by category
-- Edit product details
-- Delete products
+- Edit product details (price, category, description)
+- Delete products (soft-delete preserves history)
+- Track product creation and modification dates
 
 ### 📊 Stock Management
 Track items moving in and out
-- **Stock In**: Record when new items arrive at your warehouse
-- **Stock Out**: Record when items are sold or removed
-- View complete stock history with dates and times
-- Filter history by product, type, or time period
-- Add notes to stock movements for reference
+- **Stock In**: Record when new items arrive (purchases, transfers)
+- **Stock Out**: Record when items leave (sales, adjustments)
+- View complete stock history with timestamps
+- Track the reason and quantity for each transaction
+- Calculate real-time inventory levels
+- Identify stock movements by product or time period
+- Add notes to stock operations
 
-### 📈 Inventory Reports
+### 📈 Inventory Reports & Summary
 See important statistics
-- Total number of products
-- Total value of all inventory
-- Number of items in low stock
-- Total number of items in stock
+- Total number of products in inventory
+- Total inventory value across all products
+- Current stock levels by product
+- Stock movement history and trends
+- Low stock alerts and warnings
+- Overall inventory health metrics
 
 ### 👥 User Management (Admin Only)
 Manage who can access the system
-- Create new user accounts
-- Set user roles and permissions
-- Edit user information
-- Remove users from the system
+- Create new user accounts with credentials
+- Assign user roles (Admin, Warehouse, Staff)
+- Edit user information and roles
+- Deactivate or remove users
+- View user activity history
+- Manage role-based permissions
 
 ---
 
@@ -296,7 +339,49 @@ You should see the Swagger documentation page which shows all available features
 
 ## Testing the Application
 
-**Using Swagger (Recommended for Beginners)**
+The project includes comprehensive test coverage with both **Unit Tests** and **Integration Tests**.
+
+**Test Structure:**
+
+- **Unit Tests** (`tests/InventorySystem.Tests/Unit/`): Test individual components in isolation
+  - DTO validation tests
+  - Business logic tests
+  - Helper function tests
+
+- **Integration Tests** (`tests/InventorySystem.Tests/Integration/`): Test complete API scenarios
+  - Category API workflow tests
+  - Product API workflow tests
+  - Stock tracking scenario tests
+  - End-to-end user flows
+
+### Running Tests via Command Line
+
+**Run All Tests:**
+```bash
+dotnet test
+```
+
+**Run Only Unit Tests:**
+```bash
+dotnet test --filter Category=Unit
+```
+
+**Run Only Integration Tests:**
+```bash
+dotnet test --filter Category=Integration
+```
+
+**Run Tests with Coverage:**
+```bash
+dotnet test /p:CollectCoverage=true
+```
+
+**Run a Specific Test Class:**
+```bash
+dotnet test --filter "FullyQualifiedName~CategoryDtoTests"
+```
+
+### Using Swagger (Recommended for Manual Testing)
 
 Once the application is running, go to:
 ```
@@ -304,25 +389,37 @@ https://localhost:5044/swagger/index.html
 ```
 
 This page shows:
-- All available endpoints (features)
-- What data each endpoint needs
-- What response you'll get back
-- A button to try each feature directly in your browser
+- All available API endpoints
+- Required parameters for each endpoint
+- Expected request/response formats
+- Interactive testing interface ("Try it out" button)
 
 **To test an endpoint:**
-1. Click on the endpoint you want to test
+1. Click the endpoint you want to test
 2. Click "Try it out"
-3. Fill in the required information
+3. Fill in the required parameters
 4. Click "Execute"
-5. See the response at the bottom
+5. Review the response and status code
 
-**First Test - Login:**
-1. Find the "auth-login" endpoint
+**First Test - Authentication:**
+1. Find the auth-login endpoint under "/auth"
 2. Click it to expand
 3. Click "Try it out"
-4. Enter a username and password
+4. Enter test credentials (or use admin account if created)
 5. Click "Execute"
-6. If you see a 400 error, that's normal - you probably don't have a user yet
+6. You'll receive a session token to use for subsequent requests
+
+### Test Guide
+
+For comprehensive testing information, see:
+👉 **[Comprehensive Test Guide](./tests/InventorySystem.Tests/COMPREHENSIVE_TEST_GUIDE.md)**
+
+This includes:
+- Test architecture and organization
+- How to write new tests
+- Test data fixtures and scenarios
+- Integration test patterns
+- Best practices for testing APIs
 
 ---
 
@@ -330,10 +427,27 @@ This page shows:
 
 **If you're developing or making changes to the code:**
 
+### Project Architecture
+
+This project uses:
+- **Minimal APIs**: Lightweight API endpoints without controllers
+- **Feature-Driven Structure**: Code organized by business features
+- **Dependency Injection**: All services registered in `Program.cs` configuration
+- **FluentValidation**: Type-safe, fluent validation rules
+- **Entity Framework Core**: Database-first ORM with migrations
+- **Structured Logging**: Serilog with detailed request/response logging
+- **OpenTelemetry**: Distributed tracing and performance monitoring
+
 ### Building the Project
 Compiles the code without running it:
 ```bash
 dotnet build
+```
+
+### Running the Application
+Standard execution with current configuration:
+```bash
+dotnet run
 ```
 
 ### Running with Auto-Reload
@@ -344,60 +458,240 @@ dotnet watch run
 
 Perfect for development - just save your file and see changes immediately.
 
-### Running Tests (If Available)
+### Running Tests
+Execute the complete test suite (unit + integration):
 ```bash
 dotnet test
 ```
 
-### Checking for Issues
+Run specific test categories:
 ```bash
-dotnet build --no-restore
+dotnet test --filter Category=Unit
+dotnet test --filter Category=Integration
 ```
 
-### Creating a Migration
-When you change the database structure:
+### Adding a Database Migration
+When you modify entity models, create a migration:
 ```bash
 dotnet ef migrations add MigrationName
 dotnet ef database update
 ```
 
+### Checking for Build Issues
+```bash
+dotnet build --no-restore
+```
+
+### Code Structure Guidelines
+
+**Adding a New Feature:**
+
+1. Create a new folder under `Features/` (e.g., `Features/Orders/`)
+2. Add the feature files:
+   - `{Feature}Router.cs` - Route definitions (map endpoints)
+   - `{Feature}Service.cs` - Business logic (data operations)
+   - `{Feature}Dto.cs` - Request/response models
+   - Entity model (if needed) - Add to `Infrastructure/Databases/`
+3. Register the service in `Infrastructure/Configs/ServiceConfig.cs`
+4. Map routes in `Program.cs`
+5. Add validation rules in `Shared/Validations/`
+
+**Configuration Pattern:**
+
+All service configuration follows this pattern in `Infrastructure/Configs/`:
+```csharp
+public static class YourFeatureConfig
+{
+    public static WebApplicationBuilder AddYourFeature(this WebApplicationBuilder builder)
+    {
+        // Register services
+        return builder;
+    }
+}
+```
+
+**API Response Pattern:**
+
+All API responses use the standardized `WebResponse<T>` wrapper:
+```csharp
+public class WebResponse<T>
+{
+    public bool Success { get; set; }
+    public string? Message { get; set; }
+    public T? Data { get; set; }
+    public List<string>? Errors { get; set; }
+}
+```
+
+### Debugging
+
+**View Application Logs:**
+
+Serilog logs are output to the console with the format:
+```
+HTTP {RequestMethod} {RequestPath} responded {StatusCode} in {Elapsed}ms
+```
+
+**Enable Trace Logging:**
+
+In `appsettings.Development.json`:
+```json
+{
+  "Serilog": {
+    "MinimumLevel": "Debug"
+  }
+}
+```
+
+**Test an Endpoint:**
+
+Use the Swagger UI at: `https://localhost:5044/swagger/index.html`
+
+### Common Development Tasks
+
+**Reset Database:**
+```bash
+dotnet ef database drop --force
+dotnet ef database update
+```
+
+**Check Database Connection:**
+```bash
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "your_connection_string"
+```
+
+**List Available Endpoints:**
+
+Start the app and visit Swagger: `https://localhost:5044/swagger/index.html`
+
 ---
 
 ## Configuration
 
-The application has different settings for different situations:
+The application supports environment-specific configurations for different scenarios (Development, Production, etc.).
 
 ### Configuration Files
 
-**`appsettings.json`** (Default Settings)
-- Used by default
-- Contains general configuration
+**`appsettings.json`** (Base Configuration)
+- Default settings applied to all environments
+- General application configuration
+- Connection string templates
 
 **`appsettings.Development.json`** (Development Settings)
-- Used when you're developing and testing
-- More detailed logging
-- Easier debugging
+- Used during local development
+- Detailed logging and debug output
+- Swagger UI enabled
+- Relaxed CORS policies for easier testing
+- In-memory or local development database
 
 **`appsettings.Production.json`** (Production Settings)
-- Used when the app is live
-- More secure settings
-- Less detailed logging to improve performance
+- Used in production deployment
+- Minimal logging for performance
+- Swagger UI disabled
+- Strict CORS policies
+- Production database configuration
 
-### Environment Variables
-
-You can control which configuration file is used:
+### Setting Environment Variables
 
 **For Development:**
 ```bash
+# Windows PowerShell
+$env:ASPNETCORE_ENVIRONMENT = "Development"
+dotnet run
+
+# Windows CMD
 set ASPNETCORE_ENVIRONMENT=Development
+dotnet run
+
+# Linux/Mac
+export ASPNETCORE_ENVIRONMENT=Development
 dotnet run
 ```
 
 **For Production:**
 ```bash
+# Windows PowerShell
+$env:ASPNETCORE_ENVIRONMENT = "Production"
+dotnet run
+
+# Windows CMD
 set ASPNETCORE_ENVIRONMENT=Production
 dotnet run
+
+# Linux/Mac
+export ASPNETCORE_ENVIRONMENT=Production
+dotnet run
 ```
+
+### Configuring Services
+
+**Database Configuration** (`DatabaseConfig.cs`)
+- PostgreSQL connection string
+- Entity Framework options
+- Connection pooling settings
+- Automatic migration on startup
+
+**Authentication Configuration** (`AuthenticationConfig.cs`)
+- Cookie authentication settings
+- Session timeout
+- Secure cookie options
+
+**Authorization Configuration** (`AuthorizationConfig.cs`)
+- Role-based policies (Admin, Warehouse, Staff)
+- Authorization requirements per endpoint
+
+**CORS Configuration** (`CorsConfig.cs`)
+- Allowed origins for cross-origin requests
+- Allowed methods and headers
+- Development vs. production policies
+
+**Swagger Configuration** (`SwaggerConfig.cs`)
+- API documentation generation
+- Security definitions for authentication
+- Enabled only in Development environment
+
+**OpenTelemetry Configuration** (`OpentelemetryConfig.cs`)
+- Distributed tracing setup
+- Performance monitoring
+- Export configuration
+
+### Connection String Configuration
+
+Edit `appsettings.json`:
+
+```json
+{
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=localhost;Username=postgres;Password=your_password;Database=inventory_db;Port=5432"
+  }
+}
+```
+
+**Parameters:**
+- `Host` - PostgreSQL server address (localhost for local development)
+- `Port` - PostgreSQL port (default 5432)
+- `Username` - PostgreSQL username (default postgres)
+- `Password` - PostgreSQL password
+- `Database` - Database name
+
+### Using User Secrets (Recommended)
+
+Store sensitive data like passwords without committing to version control:
+
+```bash
+# Set a secret
+dotnet user-secrets set "ConnectionStrings:DefaultConnection" "Host=localhost;Username=postgres;Password=your_secure_password;Database=inventory_db"
+
+# List all secrets
+dotnet user-secrets list
+
+# Clear all secrets
+dotnet user-secrets clear
+```
+
+Secrets are stored in:
+- **Windows**: `%APPDATA%\Microsoft\UserSecrets\`
+- **Linux/Mac**: `~/.microsoft/usersecrets/`
 
 ---
 
@@ -422,60 +716,245 @@ This comprehensive guide includes:
 
 ## Deployment
 
-### Preparing for Production
+This section covers preparing your application for production deployment.
 
-**Create a Release Build:**
+### Prerequisites for Deployment
 
-This creates an optimized version ready for your live server:
+Ensure your server has:
+- .NET 10.0 Runtime installed
+- PostgreSQL database server
+- HTTPS/SSL certificate
+- Reverse proxy (nginx, IIS, or similar)
+
+### Preparing a Release Build
+
+Create an optimized, production-ready build:
 
 ```bash
 dotnet publish -c Release -o ./publish
 ```
 
-The files in the `publish` folder are what you upload to your server.
+This creates a `publish` folder containing:
+- Application binaries (.dll files)
+- Runtime configuration
+- Dependencies
+- Everything needed to run the application
 
-### Using Docker (Advanced)
+**Result:** The files in `./publish` are what you deploy to your server.
 
-If you want to run the application in a container:
+### Publishing to a Server
 
-**Step 1: Build the Docker Image**
+**1. On Your Development Machine:**
 ```bash
-docker build -t inventory-system .
+dotnet publish -c Release -o ./publish
 ```
 
-**Step 2: Run the Container**
+**2. Transfer to Server:**
+```bash
+# Via SCP (Linux/Mac)
+scp -r ./publish user@your-server:/var/www/inventory-app
+
+# Via SFTP (Windows/GUI)
+# Use your SFTP client to upload the publish folder
+```
+
+**3. On Your Server:**
+```bash
+# Set permissions
+chmod +x /var/www/inventory-app/InventorySystem
+
+# Start the application
+cd /var/www/inventory-app
+./InventorySystem
+# Or on Windows: InventorySystem.exe
+```
+
+### Using Docker (Recommended for Containerized Deployment)
+
+**Build Docker Image:**
+```bash
+docker build -t inventory-system:1.0 .
+```
+
+**Run Container:**
 ```bash
 docker run \
   -e ASPNETCORE_ENVIRONMENT=Production \
-  -v ./appsettings.Production.json:/App/appsettings.Production.json \
-  -p 5000:5000 \
-  inventory-system
+  -e ConnectionStrings__DefaultConnection="Host=db;Username=postgres;Password=your_password;Database=inventory_db" \
+  -p 5000:8080 \
+  --name inventory-app \
+  inventory-system:1.0
 ```
 
-**What does this do?**
-- Creates a container with the application
-- Uses Production settings
-- Exposes the application on port 5000
-- Uses your production configuration file
+**Using Docker Compose (Recommended):**
 
-### Deploying to a Server
+Create `docker-compose.yml`:
+```yaml
+version: '3.8'
 
-**General Steps:**
+services:
+  app:
+    build: .
+    environment:
+      ASPNETCORE_ENVIRONMENT: Production
+      ConnectionStrings__DefaultConnection: "Host=db;Username=postgres;Password=your_password;Database=inventory_db"
+    ports:
+      - "5000:8080"
+    depends_on:
+      - db
 
-1. Prepare a Release build
-2. Upload files to your server
-3. Configure database connection
-4. Install .NET Runtime on the server
-5. Start the application
-6. Set up a reverse proxy (nginx, IIS, etc.)
-7. Enable HTTPS
+  db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: inventory_db
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
-**Recommended Hosting Providers:**
-- Azure (Microsoft)
-- AWS
-- DigitalOcean
-- Heroku
-- Any server with .NET Runtime installed
+volumes:
+  postgres_data:
+```
+
+**Start Services:**
+```bash
+docker-compose up -d
+```
+
+### Setting Up Reverse Proxy
+
+**nginx Configuration Example:**
+
+Create `/etc/nginx/sites-available/inventory-app`:
+
+```nginx
+server {
+    listen 443 ssl http2;
+    server_name your-domain.com;
+
+    ssl_certificate /path/to/cert.pem;
+    ssl_certificate_key /path/to/key.pem;
+
+    location / {
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection keep-alive;
+        proxy_set_header Host $host;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header X-Forwarded-Proto $scheme;
+        proxy_cache_bypass $http_upgrade;
+    }
+}
+
+server {
+    listen 80;
+    server_name your-domain.com;
+    return 301 https://$server_name$request_uri;
+}
+```
+
+**Enable Site:**
+```bash
+sudo ln -s /etc/nginx/sites-available/inventory-app /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+### Database Deployment
+
+**1. Create Database on Production Server:**
+```bash
+createdb -U postgres inventory_db
+```
+
+**2. Apply Migrations:**
+```bash
+cd /var/www/inventory-app
+dotnet ef database update --configuration Release
+```
+
+**3. Seed Initial Data (Optional):**
+Create an admin user and initial categories if needed.
+
+### Health Checks
+
+Monitor your application:
+
+```bash
+# Check if running
+curl https://your-domain.com/health
+
+# View logs
+docker logs inventory-app
+```
+
+### Monitoring & Logging
+
+**View OpenTelemetry Metrics:**
+- Metrics are exported based on your `appsettings.Production.json` configuration
+- Configure exporters in `OpentelemetryConfig.cs`
+
+**Application Logs:**
+- Structured logs via Serilog
+- Check system logs or configured log sinks
+- Example: `journalctl -u inventory-app -f` (systemd)
+
+### Recommended Hosting Providers
+
+- **Azure App Service** - Microsoft's managed .NET hosting
+- **AWS Elastic Beanstalk** - AWS managed application platform
+- **DigitalOcean App Platform** - Simple container deployment
+- **Heroku** - Easy deployment (though may require buildpack)
+- **Self-hosted VPS** - Full control (AWS EC2, DigitalOcean, Linode, etc.)
+
+### SSL/TLS Certificate
+
+Use Let's Encrypt for free SSL certificates:
+
+```bash
+# Using Certbot
+sudo certbot certonly --standalone -d your-domain.com
+```
+
+Certificates are typically located at:
+- `/etc/letsencrypt/live/your-domain.com/fullchain.pem`
+- `/etc/letsencrypt/live/your-domain.com/privkey.pem`
+
+### Environment-Specific Configuration for Production
+
+Update `appsettings.Production.json`:
+
+```json
+{
+  "Serilog": {
+    "MinimumLevel": "Warning"
+  },
+  "ConnectionStrings": {
+    "DefaultConnection": "Host=prod-db-server;Username=app_user;Password=secure_password;Database=inventory_prod"
+  },
+  "Cors": {
+    "AllowedOrigins": ["https://your-domain.com"]
+  }
+}
+```
+
+### Backup & Recovery
+
+**Database Backups:**
+```bash
+# Backup PostgreSQL
+pg_dump -U postgres inventory_db > backup.sql
+
+# Restore from backup
+psql -U postgres inventory_db < backup.sql
+```
+
+**Application Files:**
+- Keep copies of published binaries
+- Maintain version history for rollback capability
+- Use version control for configuration changes
 
 ---
 
@@ -522,24 +1001,227 @@ See the [LICENSE.md](LICENSE.md) file for full details.
 
 ## Need Help?
 
-### Common Issues
+### Common Issues and Solutions
 
-**"Database connection failed"**
-- Check your PostgreSQL is running
-- Verify the connection string in `appsettings.json`
-- Make sure the database exists
+**"ConnectionRefusedException" when running the application**
+
+**Symptoms:** Application starts but fails to connect to database
+
+**Solutions:**
+1. Verify PostgreSQL is running:
+   ```bash
+   # Windows
+   Get-Service postgresql*
+   
+   # Linux
+   sudo systemctl status postgresql
+   ```
+
+2. Check your connection string in `appsettings.json`:
+   - Verify Host, Port, Username, Password, and Database name
+   - Ensure database exists: `createdb inventory_db`
+   
+3. Test the connection manually:
+   ```bash
+   psql -U postgres -h localhost -d inventory_db
+   ```
+
+---
 
 **"Port 5044 is already in use"**
-- Change the port in `Properties/launchSettings.json`
-- Or stop the application using that port
 
-**"Database migrations failed"**
-- Ensure PostgreSQL is running
-- Delete the database and try `dotnet ef database update` again
-- Check your connection string is correct
+**Symptoms:** Application fails to start on the configured port
+
+**Solutions:**
+1. Find what's using the port:
+   ```bash
+   # Windows
+   netstat -ano | findstr :5044
+   
+   # Linux/Mac
+   lsof -i :5044
+   ```
+
+2. Change the port in `Properties/launchSettings.json`:
+   ```json
+   "http": {
+     "commandName": "Project",
+     "launchBrowser": true,
+     "applicationUrl": "http://localhost:5045",
+     "environmentVariables": {
+       "ASPNETCORE_ENVIRONMENT": "Development"
+     }
+   }
+   ```
+
+3. Or kill the process using that port and restart
+
+---
+
+**"Migrations failed" or "Database update failed"**
+
+**Symptoms:** Error during `dotnet ef database update`
+
+**Solutions:**
+1. Verify database exists:
+   ```bash
+   createdb inventory_db
+   ```
+
+2. Check connection string is correct
+
+3. Reset the database (development only):
+   ```bash
+   dotnet ef database drop --force
+   dotnet ef database update
+   ```
+
+4. View migration errors in detail:
+   ```bash
+   dotnet ef database update -v
+   ```
+
+---
+
+**"Build fails with NuGet errors"**
+
+**Symptoms:** Package restore or compilation fails
+
+**Solutions:**
+1. Clear NuGet cache:
+   ```bash
+   dotnet nuget locals all --clear
+   ```
+
+2. Restore packages:
+   ```bash
+   dotnet restore
+   ```
+
+3. Clean and rebuild:
+   ```bash
+   dotnet clean
+   dotnet build
+   ```
+
+---
+
+**"Swagger shows 'Unable to fetch definition'"**
+
+**Symptoms:** Swagger UI displays error when loading API documentation
+
+**Solutions:**
+1. Verify you're in Development environment:
+   ```bash
+   # Should show "Development"
+   $env:ASPNETCORE_ENVIRONMENT
+   ```
+
+2. Restart the application with Swagger disabled/enabled:
+   ```bash
+   dotnet clean
+   dotnet build
+   dotnet run
+   ```
+
+3. Clear browser cache and refresh
+
+---
+
+**"Authentication failures" or "401 Unauthorized"**
+
+**Symptoms:** Cannot login or authorized requests return 401
+
+**Solutions:**
+1. Verify user exists in database:
+   ```sql
+   SELECT * FROM public."User";
+   ```
+
+2. Check password is correct (passwords are hashed with BCrypt)
+
+3. Verify authentication is enabled in `Program.cs`
+
+4. Check cookies are enabled in your browser
+
+---
+
+**"CORS errors when making requests from frontend"**
+
+**Symptoms:** Browser shows CORS error when calling API from different origin
+
+**Solutions:**
+1. Check CORS policy in `appsettings.json`:
+   ```json
+   "Cors": {
+     "AllowedOrigins": ["http://localhost:3000"],
+     "AllowedMethods": ["GET", "POST", "PUT", "DELETE"],
+     "AllowedHeaders": ["*"]
+   }
+   ```
+
+2. Add your frontend URL to AllowedOrigins
+
+3. Verify CORS middleware is added in `Program.cs`
+
+4. Use `app.UseCors("CorsPolicy")` before routing
+
+---
+
+**Performance is slow**
+
+**Symptoms:** Application responses are taking too long
+
+**Solutions:**
+1. Check database connection is not the bottleneck:
+   ```bash
+   # Monitor database queries
+   dotnet build -c Release
+   ```
+
+2. Enable OpenTelemetry monitoring to identify slowness
+
+3. Check application logs for errors:
+   ```bash
+   # Set minimum log level to Debug
+   # In appsettings.Development.json:
+   "Serilog": {
+     "MinimumLevel": "Debug"
+   }
+   ```
+
+4. Review long-running queries in production:
+   - Check the `OpentelemetryConfig.cs` for export configuration
+   - Review traces in your telemetry backend
+
+---
 
 ### Getting More Help
 
-- Check the [API Documentation](Docs/api-doc.md) for endpoint details
-- Review the [Project Structure](#project-structure) section
-- Check application logs for detailed error messages
+1. **Check the API Documentation:**
+   👉 [API Documentation](./docs/api-doc.md) - Complete endpoint reference
+
+2. **Review Test Examples:**
+   👉 [Comprehensive Test Guide](./tests/InventorySystem.Tests/COMPREHENSIVE_TEST_GUIDE.md) - See test patterns and examples
+
+3. **Check Application Logs:**
+   - Look for detailed error messages and stack traces
+   - Serilog logs to console in Development mode
+
+4. **Swagger Interactive Documentation:**
+   - Start the app: `dotnet run`
+   - Visit: `https://localhost:5044/swagger/index.html`
+   - Test endpoints directly in your browser
+
+5. **Search Project Issues:**
+   - Check existing GitHub issues for similar problems
+   - Include full error message and steps to reproduce
+
+6. **Enable Debug Logging:**
+   ```bash
+   # Set environment to Development
+   $env:ASPNETCORE_ENVIRONMENT = "Development"
+   
+   # Run with verbose output
+   dotnet run -v
+   ```
