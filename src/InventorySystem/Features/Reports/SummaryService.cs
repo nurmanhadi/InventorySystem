@@ -1,4 +1,5 @@
 using InventorySystem.Infrastructure.Databases;
+using InventorySystem.Shared.Dtos;
 using Microsoft.EntityFrameworkCore;
 
 namespace InventorySystem.Features.Reports;

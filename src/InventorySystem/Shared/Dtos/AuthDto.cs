@@ -1,6 +1,6 @@
 using System.Text.Json.Serialization;
 
-namespace InventorySystem.Features.Auth;
+namespace InventorySystem.Shared.Dtos;
 
 public class AuthLoginRequest
 {

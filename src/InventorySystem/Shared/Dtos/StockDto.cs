@@ -1,8 +1,7 @@
 using System.Text.Json.Serialization;
-using InventorySystem.Features.Products;
 using InventorySystem.Shared.Helpers;
 
-namespace InventorySystem.Features.Stocks;
+namespace InventorySystem.Shared.Dtos;
 
 public class StockResponse
 {

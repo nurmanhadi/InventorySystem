@@ -3,7 +3,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 using InventorySystem.Shared.Helpers;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventorySystem.Features.Users;
+namespace InventorySystem.Infrastructure.Models;
 
 [Index(nameof(Username), IsUnique = true)]
 [Table("users")]

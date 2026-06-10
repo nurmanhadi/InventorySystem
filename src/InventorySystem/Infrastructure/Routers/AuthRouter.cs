@@ -1,12 +1,13 @@
 using System.Security.Claims;
-using InventorySystem.Features.Users;
+using InventorySystem.Features.Auth;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Helpers;
 using InventorySystem.Shared.Responses;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InventorySystem.Features.Auth;
+namespace InventorySystem.Infrastructure.Routers;
 
 public static class AuthRouter
 {

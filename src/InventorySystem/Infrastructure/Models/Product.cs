@@ -1,11 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using InventorySystem.Features.Categories;
-using InventorySystem.Features.Stocks;
 using Microsoft.EntityFrameworkCore;
 using NpgsqlTypes;
 
-namespace InventorySystem.Features.Products;
+namespace InventorySystem.Infrastructure.Models;
 
 [Index(nameof(Sku), IsUnique = true)]
 [Index(nameof(CreatedAt), nameof(DeletedAt))]

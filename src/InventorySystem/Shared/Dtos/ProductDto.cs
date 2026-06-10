@@ -1,7 +1,6 @@
 using System.Text.Json.Serialization;
-using InventorySystem.Features.Categories;
 
-namespace InventorySystem.Features.Products;
+namespace InventorySystem.Shared.Dtos;
 
 public class ProductResponse
 {

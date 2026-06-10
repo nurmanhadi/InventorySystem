@@ -1,9 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using InventorySystem.Features.Products;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventorySystem.Features.Categories;
+namespace InventorySystem.Infrastructure.Models;
 
 [Index(nameof(DeletedAt))]
 [Table("categories")]

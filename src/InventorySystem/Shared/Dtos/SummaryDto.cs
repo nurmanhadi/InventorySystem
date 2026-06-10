@@ -1,5 +1,5 @@
 using System.Text.Json.Serialization;
-namespace InventorySystem.Features.Reports;
+namespace InventorySystem.Shared.Dtos;
 
 public class SummaryResponse
 {

@@ -1,9 +1,6 @@
 namespace InventorySystem.Infrastructure.Databases;
 
-using InventorySystem.Features.Categories;
-using InventorySystem.Features.Products;
-using InventorySystem.Features.Stocks;
-using InventorySystem.Features.Users;
+using InventorySystem.Infrastructure.Models;
 using Microsoft.EntityFrameworkCore;
 
 

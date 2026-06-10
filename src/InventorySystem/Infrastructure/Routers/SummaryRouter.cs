@@ -1,8 +1,10 @@
+using InventorySystem.Features.Reports;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Helpers;
 using InventorySystem.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InventorySystem.Features.Reports;
+namespace InventorySystem.Infrastructure.Routers;
 
 
 public static class SummaryRouter

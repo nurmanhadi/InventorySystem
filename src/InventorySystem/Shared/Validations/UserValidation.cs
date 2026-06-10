@@ -1,5 +1,5 @@
 using FluentValidation;
-using InventorySystem.Features.Users;
+using InventorySystem.Shared.Dtos;
 
 namespace InventorySystem.Shared.Validations;
 

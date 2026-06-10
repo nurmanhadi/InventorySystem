@@ -1,8 +1,10 @@
+using InventorySystem.Features.Stocks;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Helpers;
 using InventorySystem.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InventorySystem.Features.Stocks;
+namespace InventorySystem.Infrastructure.Routers;
 
 public static class StockRouter
 {

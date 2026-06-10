@@ -1,13 +1,8 @@
 using System.Text.Json.Serialization;
 using FluentValidation;
-using InventorySystem.Features.Auth;
-using InventorySystem.Features.Categories;
-using InventorySystem.Features.Products;
-using InventorySystem.Features.Reports;
-using InventorySystem.Features.Stocks;
-using InventorySystem.Features.Users;
 using InventorySystem.Infrastructure.Configs;
 using InventorySystem.Infrastructure.Middlewares;
+using InventorySystem.Infrastructure.Routers;
 using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);

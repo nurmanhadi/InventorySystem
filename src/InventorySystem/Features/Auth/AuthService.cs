@@ -1,6 +1,6 @@
 using FluentValidation;
-using InventorySystem.Features.Users;
 using InventorySystem.Infrastructure.Databases;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 using BC = BCrypt.Net.BCrypt;

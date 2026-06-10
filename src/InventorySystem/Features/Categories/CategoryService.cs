@@ -1,5 +1,7 @@
 using FluentValidation;
 using InventorySystem.Infrastructure.Databases;
+using InventorySystem.Infrastructure.Models;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Exceptions;
 using Microsoft.EntityFrameworkCore;
 

@@ -1,8 +1,10 @@
+using InventorySystem.Features.Categories;
+using InventorySystem.Shared.Dtos;
 using InventorySystem.Shared.Helpers;
 using InventorySystem.Shared.Responses;
 using Microsoft.AspNetCore.Mvc;
 
-namespace InventorySystem.Features.Categories;
+namespace InventorySystem.Infrastructure.Routers;
 
 public static class CategoryRouter
 {

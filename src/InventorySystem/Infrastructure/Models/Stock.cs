@@ -1,10 +1,9 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using InventorySystem.Features.Products;
 using InventorySystem.Shared.Helpers;
 using Microsoft.EntityFrameworkCore;
 
-namespace InventorySystem.Features.Stocks;
+namespace InventorySystem.Infrastructure.Models;
 
 [Index(nameof(ProductId), nameof(Type))]
 [Table("stocks")]

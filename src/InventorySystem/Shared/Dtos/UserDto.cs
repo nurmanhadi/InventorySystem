@@ -1,7 +1,7 @@
 using System.Text.Json.Serialization;
 using InventorySystem.Shared.Helpers;
 
-namespace InventorySystem.Features.Users;
+namespace InventorySystem.Shared.Dtos;
 
 public class UserResponse
 {
