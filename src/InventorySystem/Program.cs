@@ -64,8 +64,6 @@ app.UseAuthorization();
 // routes
 app.MapCategoryRoutes();
 app.MapProductRoutes();
-app.MapStockRoutes();
-app.MapSummaryRoutes();
 app.MapAuthRoutes();
 app.MapUserRoutes();
 
