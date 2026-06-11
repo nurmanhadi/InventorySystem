@@ -45,11 +45,11 @@ public class SupplierSchema : IEntityTypeConfiguration<Supplier>
 
         entity.Property(x => x.DeletedAt)
             .HasColumnName("deleted_at")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamp with time zone");
 
         entity.Property(x => x.CreatedAt)
             .HasColumnName("created_at")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamp with time zone");
 
         // Indexes
         entity.HasIndex(x => x.Code).IsUnique();

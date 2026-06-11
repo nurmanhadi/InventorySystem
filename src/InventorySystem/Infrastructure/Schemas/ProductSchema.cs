@@ -44,11 +44,11 @@ public class ProductSchema : IEntityTypeConfiguration<Product>
 
         entity.Property(x => x.DeletedAt)
             .HasColumnName("deleted_at")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamp with time zone");
 
         entity.Property(x => x.CreatedAt)
             .HasColumnName("created_at")
-            .HasColumnType("timestamp")
+            .HasColumnType("timestamp with time zone")
             .IsRequired();
 
         entity.HasOne(x => x.Category)

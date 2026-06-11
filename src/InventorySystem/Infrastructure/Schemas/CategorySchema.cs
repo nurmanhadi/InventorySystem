@@ -23,7 +23,7 @@ public class CategorySchema : IEntityTypeConfiguration<Category>
 
         entity.Property(x => x.DeletedAt)
             .HasColumnName("deleted_at")
-            .HasColumnType("timestamp");
+            .HasColumnType("timestamp with time zone");
 
         entity.HasMany(x => x.Products)
         .WithOne(x => x.Category)

@@ -66,5 +66,6 @@ app.MapCategoryRoutes();
 app.MapProductRoutes();
 app.MapAuthRoutes();
 app.MapUserRoutes();
+app.MapSupplierRoutes();
 
 app.Run();

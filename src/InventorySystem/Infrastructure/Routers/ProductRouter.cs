@@ -20,7 +20,7 @@ public static class ProductRouter
         {
             var response = await productService.AddProduct(request);
             return Results.Created(
-                $"/api/products/{response.Id}",
+                $"/products/{response.Id}",
                 new WebResponse<ProductResponse>(message: "Product created successfully", data: response));
         })
         .RequireAuthorization(RolePolicy.AdminOnly.ToString())
@@ -57,7 +57,6 @@ public static class ProductRouter
         })
         .RequireAuthorization(RolePolicy.WarehouseOperations.ToString())
         .Produces<WebResponse<WebPaginationResponse<ProductResponse>>>(200)
-        .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(500);
 
         // update product
@@ -68,10 +67,10 @@ public static class ProductRouter
             ) =>
         {
             await productService.UpdateProduct(id, request);
-            return Results.Ok(new WebResponse<ProductResponse>(message: "Product updated successfully"));
+            return Results.Ok(new WebResponse<string>(message: "Product updated successfully"));
         })
         .RequireAuthorization(RolePolicy.AdminOnly.ToString())
-        .Produces<WebResponse<ProductResponse>>(200)
+        .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(400)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);
@@ -83,10 +82,10 @@ public static class ProductRouter
             ) =>
         {
             await productService.DeleteProduct(id);
-            return Results.Ok(new WebResponse<ProductResponse>(message: "Product deleted successfully"));
+            return Results.Ok(new WebResponse<string>(message: "Product deleted successfully"));
         })
         .RequireAuthorization(RolePolicy.AdminOnly.ToString())
-        .Produces<WebResponse<ProductResponse>>(200)
+        .Produces<WebResponse<string>>(200)
         .Produces<WebResponse<string>>(404)
         .Produces<WebResponse<string>>(500);
     }
